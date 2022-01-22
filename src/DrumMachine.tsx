@@ -1,8 +1,23 @@
 import React from 'react';
-import './DrumMachine.css';
-import AudioEngine, { browserSupportsWebAudio } from './AudioEngine';
+import './DrumMachine.scss';
+import { type } from 'os';
+import AudioEngine, { browserSupportsWebAudio } from './AudioEngine.js';
 
-const patterns = [
+type Instrument = 'snare' | 'clap' | 'cowbell' | 'kick' | 'hihat';
+
+interface Track {
+  instrument: Instrument,
+  steps: Array<number>,
+}
+
+interface Pattern {
+  name: string,
+  stepCount: number,
+  beatsPerMinute: number,
+  tracks: Track[],
+}
+
+const patterns: Array<Pattern> = [
   // { "name": "oontza" },
   // { "name": "bossanoopa" },
   {
@@ -30,7 +45,7 @@ const patterns = [
   },
   {
     name: 'shuffle',
-    stepCount: '12',
+    stepCount: 12,
     beatsPerMinute: 80,
     tracks: [
       {
@@ -53,16 +68,14 @@ const patterns = [
 ];
 
 export default class DrumMachine extends React.Component {
-  state = {
+  state: any = {
     poweredOn: false,
     loading: true,
     playing: false,
     startTime: 0,
     position: {},
-    pattern: {
-      tracks: [],
-    },
   };
+  audioEngine: AudioEngine | undefined;
 
   componentDidMount() {
     if (!browserSupportsWebAudio()) {
@@ -76,7 +89,7 @@ export default class DrumMachine extends React.Component {
   powerOn = () => {
     this.audioEngine = new AudioEngine({ onStep: this.onStep });
     this.audioEngine.prepare().then(() => {
-      this.setState({ patterns, poweredOn: true }, () => {
+      this.setState({ poweredOn: true }, () => {
         const randomIndex = Math.floor(Math.random() * patterns.length);
         this.selectPattern(randomIndex);
       });
@@ -86,40 +99,40 @@ export default class DrumMachine extends React.Component {
   };
 
   startClock = () => {
-    this.audioEngine.startClock(this.state.pattern.beatsPerMinute);
+    this.audioEngine?.startClock(this.state.pattern?.beatsPerMinute);
 
     this.setState({ playing: true });
   };
 
   stopClock = () => {
-    this.audioEngine.stopClock();
+    this.audioEngine?.stopClock();
 
     this.setState({ playing: false });
   };
 
   onStep = ({
     position,
-  }) => {
+  }: any) => {
     this.setState({ position });
   };
 
-  selectPattern(index) {
-    if (index < 0) index = this.state.patterns.length - 1;
-    if (index >= this.state.patterns.length) index = 0;
-    const pattern = this.state.patterns[index];
+  selectPattern(index: number) {
+    if (index < 0) index = patterns.length - 1;
+    if (index >= patterns.length) index = 0;
+    const pattern = patterns[index];
     if (this.state.playing) {
       this.stopClock();
     }
     this.setState({ pattern, patternIndex: index, loading: false });
-    this.audioEngine.setPattern(pattern);
+    this.audioEngine?.setPattern(pattern);
   }
 
   nextPattern = () => {
-    this.selectPattern(this.state.patternIndex + 1);
+    this.selectPattern(this.state.patternIndex!! + 1);
   };
 
   previousPattern = () => {
-    this.selectPattern(this.state.patternIndex - 1);
+    this.selectPattern(this.state.patternIndex!! - 1);
   };
 
   render() {
@@ -142,7 +155,7 @@ export default class DrumMachine extends React.Component {
       );
     }
 
-    const { pattern: { tracks, name }, position: { step } } = this.state;
+    const { pattern, position } = this.state;
 
     return (
       <div className="DrumMachine">
@@ -162,7 +175,7 @@ export default class DrumMachine extends React.Component {
                   <button onClick={this.previousPattern}>&lt;</button>
                 </div>
                 <div className="DrumMachine__SelectedPattern">
-                  {name}
+                  {pattern?.name}
                 </div>
                 <div className="DrumMachine__PatternButton">
                   <button onClick={this.nextPattern}>&gt;</button>
@@ -177,12 +190,12 @@ export default class DrumMachine extends React.Component {
         </div>
 
         <div className="DrumMachine__Tracks">
-          {tracks.map((track, trackIndex) => (
+          {pattern?.tracks.map((track: any, trackIndex: any) => (
             <div className="DrumMachine__Track" key={trackIndex}>
               <div className="DrumMachine__TrackLabel">{track.instrument}</div>
               <div className="DrumMachine__TrackSteps">
-                {track.steps.map((trackStep, i) => (
-                  <div className={`DrumMachine__Step DrumMachine__Step--${step === i ? 'Active' : 'Inactive'} DrumMachine__Step--${trackStep ? 'On' : 'Off'}`} key={i} />
+                {track.steps.map((trackStep: any, i: any) => (
+                  <div className={`DrumMachine__Step DrumMachine__Step--${position?.step === i ? 'Active' : 'Inactive'} DrumMachine__Step--${trackStep ? 'On' : 'Off'}`} key={i} />
                 ))}
               </div>
             </div>

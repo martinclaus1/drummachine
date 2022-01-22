@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import DrumMachine from './DrumMachine.js';
+import DrumMachine from './DrumMachine';
 
 const App: React.FC = () => (
   <div className="App">
