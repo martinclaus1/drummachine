@@ -1,8 +1,56 @@
 import React from 'react';
 import './DrumMachine.css';
-import { fetch } from 'whatwg-fetch';
-import AudioEngine, {browserSupportsWebAudio } from './AudioEngine';
-const apiHost = process.env.REACT_APP_API_HOST || 'https://api.noopschallenge.com';
+import AudioEngine, { browserSupportsWebAudio } from './AudioEngine';
+
+const patterns = [
+  // { "name": "oontza" },
+  // { "name": "bossanoopa" },
+  {
+    "name": "nipnop",
+    "stepCount": 16,
+    "beatsPerMinute": 92,
+    "tracks": [
+      {
+        "instrument": "snare",
+        "steps": [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
+      },
+      {
+        "instrument": "clap",
+        "steps": [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1]
+      },
+      {
+        "instrument": "cowbell",
+        "steps": [0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0]
+      },
+      {
+        "instrument": "kick",
+        "steps": [1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0]
+      }
+    ]
+  },
+  {
+    name: "shuffle",
+    stepCount: "12",
+    beatsPerMinute: 80,
+    tracks: [
+      {
+        instrument: "hihat",
+        steps: [1,0,1,1,0,1,1,0,1,1,0,1]
+      },
+      {
+        instrument: 'kick',
+        steps: [1,0,0,0,0,1,0,0,0,0,0,0]
+      }
+    ]
+  },
+  // { "name": "botthisway" },
+  // { "name": "funkee" },
+  // { "name": "shlojam" },
+  // { "name": "botorik" },
+  // { "name": "swoop" },
+  // { "name": "schmaltz" },
+  // { "name": "bouncy" }
+]
 
 export default class DrumMachine extends React.Component {
   state = {
@@ -26,19 +74,13 @@ export default class DrumMachine extends React.Component {
   }
 
   powerOn = () => {
-    this.audioEngine = new AudioEngine({ onStep: this.onStep});
-    this.audioEngine.prepare().then(() =>
-      fetch(`${apiHost}/drumbot/patterns`).then(r => r.json()).then(
-        patterns => {
-          this.setState({ patterns, poweredOn: true }, () => {
-            const randomIndex = Math.floor(Math.random() * patterns.length);
-            this.selectPattern(randomIndex)
-          });
-        },
-        err => {
-          this.setState({ error: 'Oops. Something went wrong. Please check your connection and refresh your browser.', loading: false });
-        }
-    ), error => {
+    this.audioEngine = new AudioEngine({ onStep: this.onStep });
+    this.audioEngine.prepare().then(() => {
+      this.setState({ patterns, poweredOn: true }, () => {
+        const randomIndex = Math.floor(Math.random() * patterns.length);
+        this.selectPattern(randomIndex)
+      });
+    }, error => {
       this.setState({ error: true, loading: false });
     });
   }
@@ -51,7 +93,7 @@ export default class DrumMachine extends React.Component {
   stopClock = () => {
     this.audioEngine.stopClock();
 
-    this.setState({ playing: false});
+    this.setState({ playing: false });
   }
 
   onStep = ({
@@ -67,14 +109,8 @@ export default class DrumMachine extends React.Component {
     if (this.state.playing) {
       this.stopClock();
     }
-
-
-    fetch(`${apiHost}/drumbot/patterns/${pattern.name}`).then(r => r.json()).then(
-      pattern => {
-        this.setState({ pattern, patternIndex: index, loading: false });
-        this.audioEngine.setPattern(pattern);
-      }
-    );
+    this.setState({ pattern, patternIndex: index, loading: false });
+    this.audioEngine.setPattern(pattern);
   }
 
   nextPattern = () => {
