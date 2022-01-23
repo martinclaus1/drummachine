@@ -1,9 +1,8 @@
 import React from 'react';
 import './DrumMachine.scss';
-import { type } from 'os';
 import AudioEngine, { browserSupportsWebAudio } from './AudioEngine.js';
 
-type Instrument = 'snare' | 'clap' | 'cowbell' | 'kick' | 'hihat';
+type Instrument = 'snare' | 'clap' | 'cowbell' | 'kick' | 'hihat' | 'ride' | 'rim';
 
 interface Track {
   instrument: Instrument,
