@@ -128,11 +128,11 @@ export default class DrumMachine extends React.Component {
   }
 
   nextPattern = () => {
-    this.selectPattern(this.state.patternIndex!! + 1);
+    this.selectPattern(this.state.patternIndex! + 1);
   };
 
   previousPattern = () => {
-    this.selectPattern(this.state.patternIndex!! - 1);
+    this.selectPattern(this.state.patternIndex! - 1);
   };
 
   render() {
