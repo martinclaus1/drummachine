@@ -115,3 +115,7 @@ Push your work up to your own fork.
 
 
 More about Drumbot here: https://noopschallenge.com/challenges/drumbot
+
+https://github.com/cwilso/metronome/blob/master/js/metronome.js
+https://www.html5rocks.com/en/tutorials/audio/scheduling/
+https://toolstud.io/music/bpm.php?bpm=120&bpm_unit=4%2F4

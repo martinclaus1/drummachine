@@ -1,17 +1,26 @@
+import { Pattern } from './Patterns';
 import SoundPlayer from './SoundPlayer';
 
-const defaultPosition = {
+interface Position {
+  absolute: number,
+  measure: number,
+  step: number,
+  time?: number,
+  timing?: number
+}
+
+const defaultPosition: Position = {
   absolute: -1,
   measure: -1,
   step: -1,
   time: -1
 };
-const WebAudioCtor = window.AudioContext || window.webkitAudioContext;
+const WebAudioCtor = window.AudioContext || (window as any).webkitAudioContext;
 
-function initializeFirstContext() {
+const initializeFirstContext = (): AudioContext => {
   const desiredSampleRate = 44100;
 
-  var context = createNewContext()
+  const context = new WebAudioCtor()
 
   // in iOS, need to set the sample rate after initializing a context
   // SEE: https://stackoverflow.com/questions/29901577/distorted-audio-in-ios-7-1-with-webaudio-api
@@ -24,22 +33,27 @@ function initializeFirstContext() {
     dummy.disconnect()
 
     context.close() // dispose old context
-    return createNewContext();
+    return new WebAudioCtor();
   }
 
   return context
-}
-
-function createNewContext() {
-  return new WebAudioCtor();
 }
 
 const leaderTime = 0.25;
 
 export const browserSupportsWebAudio = () => !!WebAudioCtor;
 
+type OnStep = (position: Position) => void
+
 export default class AudioEngine {
-  constructor({ onStep }) {
+  position: Position;
+  context: AudioContext;
+  onStep: OnStep;
+  soundPlayer: SoundPlayer;
+  stepsPerSecond = 0;
+  pattern?: Pattern;
+  playing?: boolean;
+  constructor({ onStep }: { onStep: OnStep }) {
     this.onStep = onStep;
     this.position = defaultPosition;
     this.context = initializeFirstContext();
@@ -49,13 +63,13 @@ export default class AudioEngine {
 
   prepare = () => this.soundPlayer.prepare(this.context);
 
-  setPattern(pattern) {
+  setPattern(pattern: Pattern) {
     this.pattern = pattern;
   }
 
-  startClock = (beatsPerMinute) => {
+  startClock = (beatsPerMinute: number) => {
     this.stepsPerSecond = beatsPerMinute / 60 * 4;
-    this.context = createNewContext();
+    this.context = new WebAudioCtor();
 
     this.playing = true;
     this.scheduleSounds(this.getPosition(0));
@@ -82,23 +96,23 @@ export default class AudioEngine {
     }
     else {
       this.position = defaultPosition;
-      this.onStep({ position: this.position});
+      this.onStep(this.position);
     }
   }
 
-  getStepAbsolute(timing) {
+  getStepAbsolute(timing: number) {
     return Math.floor((timing - leaderTime) * this.stepsPerSecond);
   }
 
-  setCurrentStepAbsolute(absoluteStepCount) {
-    this.onStep({ position: this.getPosition(absoluteStepCount)});
+  setCurrentStepAbsolute(absoluteStepCount: number) {
+    this.onStep(this.getPosition(absoluteStepCount));
 
     // schedule the sounds one beat ahead so the timing is exact
     this.scheduleSounds(this.getPosition(absoluteStepCount + 1));
   }
 
-  getPosition(absoluteStepCount) {
-    const { stepCount } = this.pattern;
+  getPosition(absoluteStepCount: number) {
+    const stepCount = this.pattern?.stepCount ?? 0
     return {
       measure: Math.floor(absoluteStepCount / stepCount),
       step: absoluteStepCount % stepCount,
@@ -107,14 +121,14 @@ export default class AudioEngine {
     }
   }
 
-  scheduleSounds = (position) =>  {
+  scheduleSounds = (position: Position) => {
     if (!this.playing) return;
-    this.pattern.tracks.forEach(track => {
+    this.pattern?.tracks.forEach(track => {
       if (track.steps[position.step]) {
         this.soundPlayer.play({
           context: this.context,
           instrument: track.instrument,
-          timing: position.timing
+          timing: position.timing ?? 0
         });
       }
     });

@@ -11,30 +11,32 @@ const samples = [
  ];
 
 export default class SoundPlayer {
+  instruments: Record<string, SamplePlayer>;
   constructor() {
     this.instruments = {};
   }
 
-  prepare = (context) => {
+  prepare = (context: AudioContext) => {
     // load all samples
     return Promise.all(samples.map(sample => this.loadSample(context, sample)))
   }
 
-  loadSample = (context, instrument) => {
+  // rework to async await
+  loadSample = (context: AudioContext, instrument: string) => {
     const url = `./samples/${instrument}.wav`;
     return new Promise((resolve, reject) => {
-      var request = new XMLHttpRequest();
+      const request = new XMLHttpRequest();
 
       request.open('GET', url, true);
 
       request.responseType = 'arraybuffer';
 
       request.onload =  () => {
-        var audioData = request.response;
+        const audioData = request.response;
 
         context.decodeAudioData(audioData, (buffer) => {
           this.instruments[instrument] = new SamplePlayer(buffer);
-          resolve();
+          resolve(undefined);
         }, reject);
       };
 
@@ -46,7 +48,7 @@ export default class SoundPlayer {
     context,
     instrument,
     timing
-  }) {
+  }: {context: AudioContext, instrument: string, timing: number}) {
     const player = this.instruments[instrument];
     const gainNode = context.createGain();
     gainNode.gain.setValueAtTime(0.1, timing);

@@ -1,6 +1,6 @@
 import React from 'react';
 import './DrumMachine.scss';
-import AudioEngine, { browserSupportsWebAudio } from './AudioEngine.js';
+import AudioEngine, { browserSupportsWebAudio } from './AudioEngine';
 import { patterns } from './Patterns';
 
 export default class DrumMachine extends React.Component {
@@ -136,15 +136,6 @@ export default class DrumMachine extends React.Component {
               </div>
             </div>
           ))}
-        </div>
-
-        <div className="DrumMachine__Footer">
-          <div>
-            Join the fun at
-            {' '}
-            <a href="https://noopschallenge.com">noopschallenge.com</a>
-          </div>
-          <div><a href="https://github.com/noops-challenge/drumbot">Fork me on GitHub</a></div>
         </div>
       </div>
     );
