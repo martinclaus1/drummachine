@@ -15,7 +15,8 @@ const defaultPosition: Position = {
   step: -1,
   time: -1
 };
-const WebAudioCtor = window.AudioContext || (window as any).webkitAudioContext;
+
+const WebAudioCtor = window.AudioContext || window.webkitAudioContext;
 
 const initializeFirstContext = (): AudioContext => {
   const desiredSampleRate = 44100;
