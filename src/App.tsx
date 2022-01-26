@@ -1,5 +1,5 @@
 import React from 'react';
-import './App.css';
+import './App.scss';
 import DrumMachine from './DrumMachine';
 
 const App: React.FC = () => (
