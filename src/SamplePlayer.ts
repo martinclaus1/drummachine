@@ -1,12 +1,11 @@
-// Play a sample loaded from a file
 export default class SamplePlayer {
-  buffer: any;
+  buffer: AudioBuffer;
 
-  constructor(buffer: any) {
+  constructor(buffer: AudioBuffer) {
     this.buffer = buffer;
   }
 
-  play({ context, timing, destination }: any) :any {
+  play(context: AudioContext, timing: number, destination: AudioNode) {
     const source = context.createBufferSource();
 
     source.buffer = this.buffer;

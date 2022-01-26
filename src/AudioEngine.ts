@@ -54,7 +54,7 @@ export default class AudioEngine {
   stepsPerSecond = 0;
   pattern?: Pattern;
   playing?: boolean;
-  constructor({ onStep }: { onStep: OnStep }) {
+  constructor(onStep: OnStep) {
     this.onStep = onStep;
     this.position = defaultPosition;
     this.context = initializeFirstContext();
@@ -126,11 +126,7 @@ export default class AudioEngine {
     if (!this.playing) return;
     this.pattern?.tracks.forEach(track => {
       if (track.steps[position.step]) {
-        this.soundPlayer.play({
-          context: this.context,
-          instrument: track.instrument,
-          timing: position.timing ?? 0
-        });
+        this.soundPlayer.play(this.context, track.instrument, position.timing ?? 0);
       }
     });
   }

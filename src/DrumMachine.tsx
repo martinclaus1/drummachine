@@ -1,7 +1,7 @@
 import React from 'react';
 import './DrumMachine.scss';
 import AudioEngine, { browserSupportsWebAudio, Position } from './AudioEngine';
-import { patterns } from './Patterns';
+import { patterns, Track } from './Patterns';
 
 export default class DrumMachine extends React.Component {
   state: any = {
@@ -22,16 +22,18 @@ export default class DrumMachine extends React.Component {
     }
   }
 
-  powerOn = () => {
-    this.audioEngine = new AudioEngine({ onStep: this.onStep });
-    this.audioEngine.prepare().then(() => {
+  // todo: rework to async await
+  powerOn = async () => {
+    this.audioEngine = new AudioEngine(this.onStep);
+    try {
+      await this.audioEngine.prepare()
       this.setState({ poweredOn: true }, () => {
         const randomIndex = Math.floor(Math.random() * patterns.length);
         this.selectPattern(randomIndex);
       });
-    }, (error) => {
+    } catch (error) {
       this.setState({ error: true, loading: false });
-    });
+    }
   };
 
   startClock = () => {
@@ -124,11 +126,11 @@ export default class DrumMachine extends React.Component {
         </div>
 
         <div className="DrumMachine__Tracks">
-          {pattern?.tracks.map((track: any, trackIndex: any) => (
+          {pattern?.tracks.map((track: Track, trackIndex: number) => (
             <div className="DrumMachine__Track" key={trackIndex}>
               <div className="DrumMachine__TrackLabel">{track.instrument}</div>
               <div className="DrumMachine__TrackSteps">
-                {track.steps.map((trackStep: any, i: any) => (
+                {track.steps.map((trackStep, i) => (
                   <div className={`DrumMachine__Step DrumMachine__Step--${position?.step === i ? 'Active' : 'Inactive'} DrumMachine__Step--${trackStep ? 'On' : 'Off'}`} key={i} />
                 ))}
               </div>
