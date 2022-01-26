@@ -1,6 +1,6 @@
 import React from 'react';
 import './DrumMachine.scss';
-import AudioEngine, { browserSupportsWebAudio } from './AudioEngine';
+import AudioEngine, { browserSupportsWebAudio, Position } from './AudioEngine';
 import { patterns } from './Patterns';
 
 export default class DrumMachine extends React.Component {
@@ -46,9 +46,7 @@ export default class DrumMachine extends React.Component {
     this.setState({ playing: false });
   };
 
-  onStep = ({
-    position,
-  }: any) => {
+  onStep = (position: Position) => {
     this.setState({ position });
   };
 

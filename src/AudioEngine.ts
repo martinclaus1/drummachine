@@ -1,7 +1,7 @@
 import { Pattern } from './Patterns';
 import SoundPlayer from './SoundPlayer';
 
-interface Position {
+export interface Position {
   absolute: number,
   measure: number,
   step: number,
@@ -43,7 +43,7 @@ const leaderTime = 0.25;
 
 export const browserSupportsWebAudio = () => !!WebAudioCtor;
 
-type OnStep = (position: Position) => void
+type OnStep = (arg0: Position) => void
 
 export default class AudioEngine {
   position: Position;
