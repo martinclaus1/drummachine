@@ -54,6 +54,7 @@ export default class AudioEngine {
   stepsPerSecond = 0;
   pattern?: Pattern;
   playing?: boolean;
+  
   constructor(onStep: OnStep) {
     this.onStep = onStep;
     this.position = defaultPosition;
