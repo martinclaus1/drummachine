@@ -3,9 +3,10 @@ import './DrumMachine.scss';
 import AudioEngine, { browserSupportsWebAudio, Position } from './AudioEngine';
 import { Pattern, patterns, Track } from './Patterns';
 import { useStateIfMounted } from './UseStateIfMounted';
+import { LoadingOverlay } from '@mantine/core';
+import { useAsyncEffect } from './Async';
 
 const DrumMachine: React.FC = () => {
-  const [poweredOn, setPoweredOn] = useStateIfMounted<boolean>(false);
   const [loading, setLoading] = useStateIfMounted<boolean>(true);
   const [playing, setPlaying] = useStateIfMounted<boolean>(true);
   const [position, setPosition] = useStateIfMounted<Position>();
@@ -14,31 +15,29 @@ const DrumMachine: React.FC = () => {
   const [patternIndex, setPatternIndex] = useStateIfMounted<number>();
   const [pattern, setPattern] = useStateIfMounted<Pattern>();
 
-  React.useEffect(() => {
+  useAsyncEffect(async () => {
     if (!browserSupportsWebAudio()) {
       setLoading(false);
       setError('This browser does not support WebAudio. Try Edge, Firefox, Chrome or Safari.');
     }
-  }, []);
 
-  React.useEffect(() => {
-    if (poweredOn) {
-      const randomIndex = Math.floor(Math.random() * patterns.length);
-      selectPattern(randomIndex);
-    }
-  }, [poweredOn]);
-
-  const powerOn = async () => {
     const audioEngine = new AudioEngine(onStep);
     setAudioEngine(audioEngine);
     try {
       await audioEngine?.prepare();
-      setPoweredOn(true);
     } catch (error) {
       setError(true);
       setLoading(false);
     }
-  };
+  }, []);
+
+  React.useEffect(() => {
+    if (audioEngine) {
+      const randomIndex = Math.floor(Math.random() * patterns.length);
+      selectPattern(randomIndex);
+    }
+    setLoading(false);
+  }, [audioEngine]);
 
   const startClock = () => {
     audioEngine?.startClock(pattern?.beatsPerMinute ?? 0);
@@ -64,7 +63,6 @@ const DrumMachine: React.FC = () => {
     }
     setPattern(pattern);
     setPatternIndex(index);
-    setLoading(false);
     audioEngine?.setPattern(pattern);
   };
 
@@ -80,66 +78,56 @@ const DrumMachine: React.FC = () => {
     return <div className="DrumMachine__Error">{error}</div>;
   }
 
-  if (!poweredOn) {
-    return (
-      <div className="DrumMachine">
-        <div className="DrumMachine__GetStarted">
-          <p>Welcome to drumbot</p>
-          <button className="DrumMachine__StartStopButton" onClick={powerOn}>
-            Start!
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="DrumMachine">
-      <div className="DrumMachine__TopPanel">
-        <div className="DrumMachine__Logo">
-          <div className="DrumMachine__Title">PR-606</div>
-          <div className="DrumMachine__SubTitle">FORKABLE DRUM COMPUTER</div>
-        </div>
-        {poweredOn && (
-          <>
-            <div className="DrumMachine__PatternSelector">
-              <div className="DrumMachine__PatternButton">
-                <button onClick={previousPattern}>&lt;</button>
+      <LoadingOverlay visible={loading} />
+      {!loading && (
+        <>
+          <div className="DrumMachine__TopPanel">
+            <div className="DrumMachine__Logo">
+              <div className="DrumMachine__Title">PR-606</div>
+              <div className="DrumMachine__SubTitle">FORKABLE DRUM COMPUTER</div>
+            </div>
+            <>
+              <div className="DrumMachine__PatternSelector">
+                <div className="DrumMachine__PatternButton">
+                  <button onClick={previousPattern}>&lt;</button>
+                </div>
+                <div className="DrumMachine__SelectedPattern">{pattern?.name}</div>
+                <div className="DrumMachine__PatternButton">
+                  <button onClick={nextPattern}>&gt;</button>
+                </div>
               </div>
-              <div className="DrumMachine__SelectedPattern">{pattern?.name}</div>
-              <div className="DrumMachine__PatternButton">
-                <button onClick={nextPattern}>&gt;</button>
+              <div className="DrumMachine__Transport">
+                <button disabled={playing} className="DrumMachine__StartStopButton" onClick={startClock}>
+                  Start
+                </button>
+                <button disabled={!playing} className="DrumMachine__StartStopButton" onClick={stopClock}>
+                  Stop
+                </button>
               </div>
-            </div>
-            <div className="DrumMachine__Transport">
-              <button disabled={playing} className="DrumMachine__StartStopButton" onClick={startClock}>
-                Start
-              </button>
-              <button disabled={!playing} className="DrumMachine__StartStopButton" onClick={stopClock}>
-                Stop
-              </button>
-            </div>
-          </>
-        )}
-      </div>
-
-      <div className="DrumMachine__Tracks">
-        {pattern?.tracks.map((track: Track, trackIndex: number) => (
-          <div className="DrumMachine__Track" key={trackIndex}>
-            <div className="DrumMachine__TrackLabel">{track.instrument}</div>
-            <div className="DrumMachine__TrackSteps">
-              {track.steps.map((trackStep, i) => (
-                <div
-                  className={`DrumMachine__Step DrumMachine__Step--${position?.step === i ? 'Active' : 'Inactive'} DrumMachine__Step--${
-                    trackStep ? 'On' : 'Off'
-                  }`}
-                  key={i}
-                />
-              ))}
-            </div>
+            </>
           </div>
-        ))}
-      </div>
+
+          <div className="DrumMachine__Tracks">
+            {pattern?.tracks.map((track: Track, trackIndex: number) => (
+              <div className="DrumMachine__Track" key={trackIndex}>
+                <div className="DrumMachine__TrackLabel">{track.instrument}</div>
+                <div className="DrumMachine__TrackSteps">
+                  {track.steps.map((trackStep, i) => (
+                    <div
+                      className={`DrumMachine__Step DrumMachine__Step--${position?.step === i ? 'Active' : 'Inactive'} DrumMachine__Step--${
+                        trackStep ? 'On' : 'Off'
+                      }`}
+                      key={i}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 };
