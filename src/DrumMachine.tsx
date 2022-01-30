@@ -75,48 +75,44 @@ const DrumMachine: React.FC = () => {
   };
 
   if (error) {
-    return <div className="DrumMachine__Error">{error}</div>;
+    return <div className="drum-machine__Error">{error}</div>;
   }
 
   return (
-    <div className="DrumMachine">
+    <div className="drum-machine">
       <LoadingOverlay visible={loading} />
       {!loading && (
         <>
-          <div className="DrumMachine__TopPanel">
-            <div className="DrumMachine__Logo">
-              <div className="DrumMachine__Title">PR-606</div>
-              <div className="DrumMachine__SubTitle">FORKABLE DRUM COMPUTER</div>
-            </div>
+          <div className="drum-machine__TopPanel">
             <>
-              <div className="DrumMachine__PatternSelector">
-                <div className="DrumMachine__PatternButton">
+              <div className="drum-machine__PatternSelector">
+                <div className="drum-machine__PatternButton">
                   <button onClick={previousPattern}>&lt;</button>
                 </div>
-                <div className="DrumMachine__SelectedPattern">{pattern?.name}</div>
-                <div className="DrumMachine__PatternButton">
+                <div className="drum-machine__SelectedPattern">{pattern?.name}</div>
+                <div className="drum-machine__PatternButton">
                   <button onClick={nextPattern}>&gt;</button>
                 </div>
               </div>
-              <div className="DrumMachine__Transport">
-                <button disabled={playing} className="DrumMachine__StartStopButton" onClick={startClock}>
+              <div className="drum-machine__Transport">
+                <button disabled={playing} className="drum-machine__StartStopButton" onClick={startClock}>
                   Start
                 </button>
-                <button disabled={!playing} className="DrumMachine__StartStopButton" onClick={stopClock}>
+                <button disabled={!playing} className="drum-machine__StartStopButton" onClick={stopClock}>
                   Stop
                 </button>
               </div>
             </>
           </div>
 
-          <div className="DrumMachine__Tracks">
+          <div className="drum-machine__Tracks">
             {pattern?.tracks.map((track: Track, trackIndex: number) => (
-              <div className="DrumMachine__Track" key={trackIndex}>
-                <div className="DrumMachine__TrackLabel">{track.instrument}</div>
-                <div className="DrumMachine__TrackSteps">
+              <div className="drum-machine__Track" key={trackIndex}>
+                <div className="drum-machine__TrackLabel">{track.instrument}</div>
+                <div className="drum-machine__TrackSteps">
                   {track.steps.map((trackStep, i) => (
                     <div
-                      className={`DrumMachine__Step DrumMachine__Step--${position?.step === i ? 'Active' : 'Inactive'} DrumMachine__Step--${
+                      className={`drum-machine__Step drum-machine__Step--${position?.step === i ? 'Active' : 'Inactive'} drum-machine__Step--${
                         trackStep ? 'On' : 'Off'
                       }`}
                       key={i}
