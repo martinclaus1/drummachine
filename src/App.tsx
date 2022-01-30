@@ -1,6 +1,7 @@
 import { AppShell, Header, MantineProvider, Text, ThemeIcon } from '@mantine/core';
 import { PlayIcon } from '@modulz/radix-icons';
 import React from 'react';
+import './App.scss'
 import DrumMachine from './DrumMachine';
 
 const App: React.FC = () => (
