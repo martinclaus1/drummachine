@@ -2,29 +2,14 @@
   position: relative;
 
   .top-panel {
-    display: flex;
-    align-items: flex-end;
+    .section {
+      & > * {
+        margin-right: 5px;
+      }
+      display: flex;
+      align-items: flex-end;
+    }
   }
-}
-
-.drum-machine__Tracks {
-  max-width: 100%;
-}
-
-.drum-machine__Track {
-  max-width: 100%;
-  padding: 10px;
-  margin: 10px auto;
-  background-color: #999;
-  border-radius: 5px;
-}
-
-.drum-machine__TrackLabel {
-  flex: 0 0 1;
-  text-transform: uppercase;
-  text-align: left;
-  font-family: 'Righteous', monospace;
-  font-size: 18px;
 }
 
 .drum-machine__TrackSteps {
@@ -33,18 +18,16 @@
   display: flex;
 }
 
-
 .drum-machine__Step {
   margin: 1px;
-  border: 2px solid #AAAAAA;
+  border: 1px solid #AAAAAA;
   height: 20px;
   border-radius: 10px;
   flex: 1 0;
-  background: #555555;
+  background: #778ca3;
   transition: border-color 950ms ease-out;
   transition: background-color 400ms ease-out;
 }
-
 
 @media (min-width: 600px) {
 .drum-machine__Step {
@@ -58,18 +41,18 @@
 }
 
 .drum-machine__Step--On {
-  background: #9999EE;
-  border: 2px solid #BBBBBB;
+  background: #45aaf2;
+  border: 1px solid #BBBBBB;
   transition: background-color 500ms ease-out;
 }
 
 .drum-machine__Step--Active {
-  border: 2px solid #DDAAAA;
-  background: #777777
+  border: 1px solid #eb3b5a;
+  background: #a5b1c2
 }
 
 .drum-machine__Step--Active.drum-machine__Step--On {
-  background: yellow;
+  background: #fed330;
   transition: background-color 10ms !important;
 }
 
@@ -81,4 +64,10 @@
 @keyframes throb {
   0% {transform: scale(1);}
   50% {transform: scale(1.1);}
+}
+
+.track-component {
+  .title {
+    text-transform: capitalize;
+  }
 }

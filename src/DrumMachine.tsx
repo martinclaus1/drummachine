@@ -3,7 +3,7 @@ import './DrumMachine.scss';
 import AudioEngine, { browserSupportsWebAudio, Position } from './AudioEngine';
 import { Pattern, patterns, Track } from './Patterns';
 import { useStateIfMounted } from './UseStateIfMounted';
-import { Button, Card, Container, LoadingOverlay, Select } from '@mantine/core';
+import { Button, Card, Container, LoadingOverlay, Select, SimpleGrid, Title } from '@mantine/core';
 import { useAsyncEffect } from './Async';
 
 interface SelectablePattern {
@@ -85,45 +85,65 @@ const DrumMachine: React.FC = () => {
         <LoadingOverlay visible={loading} />
         {!loading && (
           <>
-            <div className="top-panel">
-              <Select
-                label="Pattern"
-                onChange={(value: string) => setSelectedPattern(value)}
-                placeholder="Pick one"
-                value={selectedPattern}
-                data={selectablePatterns}
-              />
-              <div className="drum-machine__Transport">
+            <Card className="top-panel">
+              <Card.Section className='section'>
+                <Select
+                  label="Pattern"
+                  onChange={(value: string) => setSelectedPattern(value)}
+                  placeholder="Pick one"
+                  value={selectedPattern}
+                  data={selectablePatterns}
+                />
                 <Button disabled={playing} className="drum-machine__StartStopButton" onClick={startClock}>
                   Start
                 </Button>
                 <Button disabled={!playing} className="drum-machine__StartStopButton" onClick={stopClock}>
                   Stop
                 </Button>
-              </div>
-            </div>
+              </Card.Section>
+            </Card>
 
-            <div className="drum-machine__Tracks">
+            <SimpleGrid spacing='xs'>
               {pattern?.tracks.map((track: Track, trackIndex: number) => (
-                <div className="drum-machine__Track" key={trackIndex}>
-                  <div className="drum-machine__TrackLabel">{track.instrument}</div>
-                  <div className="drum-machine__TrackSteps">
-                    {track.steps.map((trackStep, i) => (
-                      <div
-                        className={`drum-machine__Step drum-machine__Step--${position?.step === i ? 'Active' : 'Inactive'} drum-machine__Step--${trackStep ? 'On' : 'Off'
-                          }`}
-                        key={i}
-                      />
-                    ))}
-                  </div>
-                </div>
+                <TrackComponent track={track} currentStep={position?.step} key={trackIndex} />
               ))}
-            </div>
+            </SimpleGrid>
           </>
         )}
       </Card>
     </Container>
   );
 };
+
+interface TrackComponentProps {
+  track: Track,
+  currentStep?: number,
+}
+
+const TrackComponent: React.FC<TrackComponentProps> = ({ track, currentStep }) => {
+  return (<Card padding='xs' shadow='sm' withBorder className='track-component'>
+    <Title order={3} className='title'>
+      {track.instrument}
+    </Title>
+    <div className="drum-machine__TrackSteps">
+      {track.steps.map((trackStep, i) => (
+        <StepComponent currentStep={currentStep} enabled={trackStep === 0 ? false : true} stepIndex={i} key={i} />
+      ))}
+    </div>
+  </Card>);
+}
+
+interface StepComponentProps {
+  enabled: boolean,
+  currentStep?: number,
+  stepIndex: number
+}
+
+const StepComponent: React.FC<StepComponentProps> = ({ enabled, currentStep, stepIndex }) => {
+  return (<div
+    className={`drum-machine__Step drum-machine__Step--${currentStep === stepIndex ? 'Active' : 'Inactive'} drum-machine__Step--${enabled ? 'On' : 'Off'
+      }`}
+  />)
+}
 
 export default DrumMachine;
