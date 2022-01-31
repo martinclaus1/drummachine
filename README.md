@@ -9,6 +9,9 @@ yarn install
 yarn start
 ```
 
+## Live demo
+
+The live demo can be used [here](https://{username}.github.io/{repo-name}).
 ## Future outlook
 
 * allow pattern changes in the UI
