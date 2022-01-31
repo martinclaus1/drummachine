@@ -11,7 +11,7 @@ yarn start
 
 ## Live demo
 
-The live demo can be used [here](https://{username}.github.io/{repo-name}).
+The live demo can be used [here](https://martinclaus1.github.io/drumbot/).
 ## Future outlook
 
 * allow pattern changes in the UI
