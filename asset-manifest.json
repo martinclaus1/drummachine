@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/drumbot/static/css/main.5bee502c.css",
+    "main.js": "/drumbot/static/js/main.0918c8fe.js",
+    "index.html": "/drumbot/index.html",
+    "main.5bee502c.css.map": "/drumbot/static/css/main.5bee502c.css.map",
+    "main.0918c8fe.js.map": "/drumbot/static/js/main.0918c8fe.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.5bee502c.css",
+    "static/js/main.0918c8fe.js"
+  ]
+}
