@@ -85,23 +85,21 @@ const DrumMachine: React.FC = () => {
         <LoadingOverlay visible={loading} />
         {!loading && (
           <>
-            <Card className="top-panel">
-              <Card.Section className='section'>
-                <Select
-                  label="Pattern"
-                  onChange={(value: string) => setSelectedPattern(value)}
-                  placeholder="Pick one"
-                  value={selectedPattern}
-                  data={selectablePatterns}
-                />
-                <Button disabled={playing} className="drum-machine__StartStopButton" onClick={startClock}>
-                  Start
-                </Button>
-                <Button disabled={!playing} className="drum-machine__StartStopButton" onClick={stopClock}>
-                  Stop
-                </Button>
-              </Card.Section>
-            </Card>
+            <Container className="top-panel" padding={0}>
+              <Select
+                label="Pattern"
+                onChange={(value: string) => setSelectedPattern(value)}
+                placeholder="Pick one"
+                value={selectedPattern}
+                data={selectablePatterns}
+              />
+              <Button disabled={playing} className="drum-machine__StartStopButton" onClick={startClock}>
+                Start
+              </Button>
+              <Button disabled={!playing} className="drum-machine__StartStopButton" onClick={stopClock}>
+                Stop
+              </Button>
+            </Container>
 
             <SimpleGrid spacing='xs'>
               {pattern?.tracks.map((track: Track, trackIndex: number) => (
