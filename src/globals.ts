@@ -1,8 +1,8 @@
 declare global {
-  interface Window {
-    AudioContext?: AudioContext;
-    webkitAudioContext?: AudioContext;
-  }
+    interface Window {
+        AudioContext?: AudioContext;
+        webkitAudioContext?: AudioContext;
+    }
 }
 
 export {};

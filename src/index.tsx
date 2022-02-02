@@ -4,4 +4,4 @@ import './index.scss';
 import App from './App';
 import './globals';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<App/>, document.getElementById('root'));
