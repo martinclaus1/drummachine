@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/drumbot/static/css/main.762acf70.css",
-    "main.js": "/drumbot/static/js/main.e10a21c3.js",
+    "main.js": "/drumbot/static/js/main.a0dd2131.js",
     "index.html": "/drumbot/index.html",
     "main.762acf70.css.map": "/drumbot/static/css/main.762acf70.css.map",
-    "main.e10a21c3.js.map": "/drumbot/static/js/main.e10a21c3.js.map"
+    "main.a0dd2131.js.map": "/drumbot/static/js/main.a0dd2131.js.map"
   },
   "entrypoints": [
     "static/css/main.762acf70.css",
-    "static/js/main.e10a21c3.js"
+    "static/js/main.a0dd2131.js"
   ]
 }
