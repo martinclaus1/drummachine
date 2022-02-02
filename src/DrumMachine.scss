@@ -2,13 +2,13 @@
   position: relative;
 
   .top-panel {
-     & > * {
-       margin-right: .5rem;
-     }
+    & > * {
+      margin-right: 0.5rem;
+    }
 
-      display: flex;
-      padding: .5rem 0;
-      align-items: flex-end;
+    display: flex;
+    padding: 0.5rem 0;
+    align-items: flex-end;
   }
 }
 
@@ -20,7 +20,7 @@
 
 .drum-machine__Step {
   margin: 1px;
-  border: 1px solid #AAAAAA;
+  border: 1px solid #aaaaaa;
   height: 20px;
   border-radius: 10px;
   flex: 1 0;
@@ -30,7 +30,7 @@
 }
 
 @media (min-width: 600px) {
-.drum-machine__Step {
+  .drum-machine__Step {
     height: 50px;
     margin: 2px;
   }
@@ -42,13 +42,13 @@
 
 .drum-machine__Step--On {
   background: #45aaf2;
-  border: 1px solid #BBBBBB;
+  border: 1px solid #bbbbbb;
   transition: background-color 500ms ease-out;
 }
 
 .drum-machine__Step--Active {
   border: 1px solid #eb3b5a;
-  background: #a5b1c2
+  background: #a5b1c2;
 }
 
 .drum-machine__Step--Active.drum-machine__Step--On {
@@ -57,13 +57,21 @@
 }
 
 @-webkit-keyframes throb {
-  0% {-webkit-transform: scale(1);}
-  50% {-webkit-transform: scale(1.1);}
+  0% {
+    -webkit-transform: scale(1);
+  }
+  50% {
+    -webkit-transform: scale(1.1);
+  }
 }
 
 @keyframes throb {
-  0% {transform: scale(1);}
-  50% {transform: scale(1.1);}
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
 }
 
 .track-component {

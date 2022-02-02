@@ -7,8 +7,8 @@ import { Button, Card, Container, LoadingOverlay, Select, SimpleGrid, Title } fr
 import { useAsyncEffect } from './Async';
 
 interface SelectablePattern {
-  value: string,
-  label: string
+  value: string;
+  label: string;
 }
 
 const DrumMachine: React.FC = () => {
@@ -19,7 +19,7 @@ const DrumMachine: React.FC = () => {
   const [audioEngine, setAudioEngine] = useStateIfMounted<AudioEngine>();
   const [pattern, setPattern] = useStateIfMounted<Pattern>();
   const [selectedPattern, setSelectedPattern] = useStateIfMounted<string>('');
-  const [selectablePatterns, setSelectablePatterns] = useStateIfMounted<SelectablePattern[]>([])
+  const [selectablePatterns, setSelectablePatterns] = useStateIfMounted<SelectablePattern[]>([]);
 
   useAsyncEffect(async () => {
     if (!browserSupportsWebAudio()) {
@@ -36,28 +36,27 @@ const DrumMachine: React.FC = () => {
       setLoading(false);
     }
 
-    const selectablePatterns = patterns.map(pattern => ({ label: pattern.name, value: pattern.name }))
+    const selectablePatterns = patterns.map((pattern) => ({ label: pattern.name, value: pattern.name }));
     setSelectablePatterns(selectablePatterns);
   }, []);
 
   React.useEffect(() => {
     if (audioEngine && selectablePatterns.length > 0) {
       const randomIndex = Math.floor(Math.random() * selectablePatterns.length);
-      setSelectedPattern(selectablePatterns[randomIndex].value)
+      setSelectedPattern(selectablePatterns[randomIndex].value);
     }
     setLoading(false);
   }, [audioEngine, selectablePatterns]);
 
   React.useEffect(() => {
     if (selectedPattern) {
-      const pattern = patterns.find(pattern => pattern.name === selectedPattern)!;
+      const pattern = patterns.find((pattern) => pattern.name === selectedPattern)!;
       if (playing) {
         stopClock();
       }
       setPattern(pattern);
       audioEngine?.setPattern(pattern);
     }
-
   }, [selectedPattern]);
 
   const startClock = () => {
@@ -101,7 +100,7 @@ const DrumMachine: React.FC = () => {
               </Button>
             </Container>
 
-            <SimpleGrid spacing='xs'>
+            <SimpleGrid spacing="xs">
               {pattern?.tracks.map((track: Track, trackIndex: number) => (
                 <TrackComponent track={track} currentStep={position?.step} key={trackIndex} />
               ))}
@@ -114,34 +113,39 @@ const DrumMachine: React.FC = () => {
 };
 
 interface TrackComponentProps {
-  track: Track,
-  currentStep?: number,
+  track: Track;
+  currentStep?: number;
 }
 
 const TrackComponent: React.FC<TrackComponentProps> = ({ track, currentStep }) => {
-  return (<Card padding='xs' shadow='sm' withBorder className='track-component'>
-    <Title order={3} className='title'>
-      {track.instrument}
-    </Title>
-    <div className="drum-machine__TrackSteps">
-      {track.steps.map((trackStep, i) => (
-        <StepComponent currentStep={currentStep} enabled={trackStep === 0 ? false : true} stepIndex={i} key={i} />
-      ))}
-    </div>
-  </Card>);
-}
+  return (
+    <Card padding="xs" shadow="sm" withBorder className="track-component">
+      <Title order={3} className="title">
+        {track.instrument}
+      </Title>
+      <div className="drum-machine__TrackSteps">
+        {track.steps.map((trackStep, i) => (
+          <StepComponent currentStep={currentStep} enabled={trackStep === 0 ? false : true} stepIndex={i} key={i} />
+        ))}
+      </div>
+    </Card>
+  );
+};
 
 interface StepComponentProps {
-  enabled: boolean,
-  currentStep?: number,
-  stepIndex: number
+  enabled: boolean;
+  currentStep?: number;
+  stepIndex: number;
 }
 
 const StepComponent: React.FC<StepComponentProps> = ({ enabled, currentStep, stepIndex }) => {
-  return (<div
-    className={`drum-machine__Step drum-machine__Step--${currentStep === stepIndex ? 'Active' : 'Inactive'} drum-machine__Step--${enabled ? 'On' : 'Off'
+  return (
+    <div
+      className={`drum-machine__Step drum-machine__Step--${currentStep === stepIndex ? 'Active' : 'Inactive'} drum-machine__Step--${
+        enabled ? 'On' : 'Off'
       }`}
-  />)
-}
+    />
+  );
+};
 
 export default DrumMachine;
