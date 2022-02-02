@@ -1,15 +1,15 @@
 export type Instrument = 'snare' | 'clap' | 'cowbell' | 'kick' | 'hihat' | 'ride' | 'rim';
 
 export interface Track {
-  instrument: Instrument,
-  steps: Array<number>,
+  instrument: Instrument;
+  steps: Array<number>;
 }
 
 export interface Pattern {
-  name: string,
-  stepCount: number,
-  beatsPerMinute: number,
-  tracks: Track[],
+  name: string;
+  stepCount: number;
+  beatsPerMinute: number;
+  tracks: Track[];
 }
 
 export const patterns: Array<Pattern> = [
@@ -48,8 +48,32 @@ export const patterns: Array<Pattern> = [
         steps: [1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1],
       },
       {
+        instrument: 'snare',
+        steps: [0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0],
+      },
+      {
         instrument: 'kick',
         steps: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+      },
+    ],
+  },
+  // should be hihat foot machine
+  {
+    name: 'bossanova',
+    stepCount: 16,
+    beatsPerMinute: 60,
+    tracks: [
+      {
+        instrument: 'hihat',
+        steps: [0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+      },
+      {
+        instrument: 'snare',
+        steps: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      },
+      {
+        instrument: 'kick',
+        steps: [1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1],
       },
     ],
   },
