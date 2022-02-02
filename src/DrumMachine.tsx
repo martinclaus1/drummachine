@@ -3,8 +3,37 @@ import './DrumMachine.scss';
 import AudioEngine, {browserSupportsWebAudio, Position} from './AudioEngine';
 import {Pattern, patterns, Track} from './Patterns';
 import {useStateIfMounted} from './UseStateIfMounted';
-import {Button, Card, Container, LoadingOverlay, Select, SimpleGrid, Title} from '@mantine/core';
+import {Button, Card, Container, createStyles, LoadingOverlay, Select, SimpleGrid, Title} from '@mantine/core';
 import {useAsyncEffect} from './Async';
+
+const useStyles = createStyles((theme) => ({
+    drumMachine: {
+        position: 'relative',
+    },
+    topPanel: {
+        '& > *': {
+            marginRight: theme.spacing.sm,
+        },
+        padding: '.5rem 0',
+        display: 'flex',
+        alignItems: 'flex-end',
+    },
+
+    trackSteps: {
+        width: '100%',
+        maxWidth: '100%',
+        display: 'flex'
+    },
+    step: {
+        margin: '1px',
+        border: '1px solild #aaa',
+        height: '20px',
+        borderRadius: '10px',
+        flex: '1 0',
+        background: '#778ca3',
+        transition: 'border-color 950ms ease-out, background-color 400ms ease-out',
+    },
+}));
 
 interface SelectablePattern {
     value: string;
@@ -12,6 +41,7 @@ interface SelectablePattern {
 }
 
 const DrumMachine: React.FC = () => {
+    const {classes} = useStyles();
     const [loading, setLoading] = useStateIfMounted<boolean>(true);
     const [playing, setPlaying] = useStateIfMounted<boolean>(true);
     const [position, setPosition] = useStateIfMounted<Position>();
@@ -80,11 +110,11 @@ const DrumMachine: React.FC = () => {
 
     return (
             <Container>
-                <Card shadow="sm" padding="sm" className="drum-machine">
+                <Card shadow="sm" padding="sm" className={classes.drumMachine}>
                     <LoadingOverlay visible={loading}/>
                     {!loading && (
                             <>
-                                <Container className="top-panel" padding={0}>
+                                <Container className={classes.topPanel} padding={0}>
                                     <Select
                                             label="Pattern"
                                             onChange={(value: string) => setSelectedPattern(value)}
@@ -121,12 +151,13 @@ interface TrackComponentProps {
 }
 
 const TrackComponent: React.FC<TrackComponentProps> = ({track, currentStep}) => {
+    const {classes} = useStyles();
     return (
             <Card padding="xs" shadow="sm" withBorder className="track-component">
                 <Title order={3} className="title">
                     {track.instrument}
                 </Title>
-                <div className="drum-machine__TrackSteps">
+                <div className={classes.trackSteps}>
                     {track.steps.map((trackStep, i) => (
                             <StepComponent currentStep={currentStep} enabled={trackStep === 0 ? false : true}
                                            stepIndex={i} key={i}/>
@@ -143,13 +174,13 @@ interface StepComponentProps {
 }
 
 const StepComponent: React.FC<StepComponentProps> = ({enabled, currentStep, stepIndex}) => {
-    return (
-            <div
-                    className={`drum-machine__Step drum-machine__Step--${currentStep === stepIndex ? 'Active' : 'Inactive'} drum-machine__Step--${
-                            enabled ? 'On' : 'Off'
-                    }`}
-            />
-    );
+    const {classes} = useStyles();
+
+    return <div
+            className={`${classes.step} drum-machine__Step--${currentStep === stepIndex ? 'Active' : 'Inactive'} drum-machine__Step--${
+                    enabled ? 'On' : 'Off'
+            }`}
+    />;
 };
 
 export default DrumMachine;
