@@ -1,6 +1,6 @@
-#  🎼 Drumbot
+#  🎼 Drum machine
 
-Drumbot is a fork from [noops-challenge/drumbot](https://github.com/noops-challenge/drumbot). The idea is to create a drum computer which is available in the browser. It should help students learn new rhythms and improve their timing. It uses the [WebAudio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API). The frontend is written in [React](https://reactjs.org/) and uses the [Mantine component library](https://mantine.dev/).
+Drum machine is a fork from [noops-challenge/drumbot](https://github.com/noops-challenge/drumbot). The idea is to create a drum computer which is available in the browser. It should help students learn new rhythms and improve their timing. It uses the [WebAudio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API). The frontend is written in [React](https://reactjs.org/) and uses the [Mantine component library](https://mantine.dev/).
 
 ## How to use it
 
@@ -11,7 +11,7 @@ yarn start
 
 ## Live demo
 
-The live demo can be used [here](https://martinclaus1.github.io/drumbot/).
+The live demo can be used [here](https://martinclaus1.github.io/drummachine).
 ## Future outlook
 
 * allow pattern changes in the UI
