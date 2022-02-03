@@ -13,7 +13,7 @@ const App: React.FC = () => (
                                 <PlayIcon/>
                             </ThemeIcon>
                             <Text style={{marginLeft: '1rem'}} weight="bold">
-                                Drum Computer
+                                Drum Machine
                             </Text>
                         </Header>
                     }
