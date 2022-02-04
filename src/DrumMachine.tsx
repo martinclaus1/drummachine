@@ -1,39 +1,67 @@
-import React from 'react';
-import './DrumMachine.scss';
+import * as React from 'react';
 import AudioEngine, {browserSupportsWebAudio, Position} from './AudioEngine';
 import {Pattern, patterns, Track} from './Patterns';
 import {useStateIfMounted} from './UseStateIfMounted';
 import {Button, Card, Container, createStyles, LoadingOverlay, Select, SimpleGrid, Title} from '@mantine/core';
 import {useAsyncEffect} from './Async';
 
-const useStyles = createStyles((theme) => ({
-    drumMachine: {
-        position: 'relative',
-    },
-    topPanel: {
-        '& > *': {
-            marginRight: theme.spacing.sm,
-        },
-        padding: '.5rem 0',
-        display: 'flex',
-        alignItems: 'flex-end',
-    },
+const useStyles = createStyles((theme, _params, getRef) => {
+    const stepOn = getRef('stepOn');
 
-    trackSteps: {
-        width: '100%',
-        maxWidth: '100%',
-        display: 'flex'
-    },
-    step: {
-        margin: '1px',
-        border: '1px solild #aaa',
-        height: '20px',
-        borderRadius: '10px',
-        flex: '1 0',
-        background: '#778ca3',
-        transition: 'border-color 950ms ease-out, background-color 400ms ease-out',
-    },
-}));
+    return ({
+        drumMachine: {
+            position: 'relative',
+            '@media (min-width: 600px)': {
+                minHeight: '600px',
+            }
+        },
+        topPanel: {
+            '& > *': {
+                marginRight: theme.spacing.sm,
+            },
+            padding: '.5rem 0',
+            display: 'flex',
+            alignItems: 'flex-end',
+        },
+
+        trackSteps: {
+            width: '100%',
+            maxWidth: '100%',
+            display: 'flex',
+        },
+        step: {
+            margin: '1px',
+            border: '1px solid #aaa',
+            height: '20px',
+            borderRadius: '10px',
+            flex: '1 0',
+            background: '#778ca3',
+            transition: 'border-color 950ms ease-out, background-color 400ms ease-out',
+
+            '@media (min-width: 600px)': {
+                height: '50px',
+                margin: '2px',
+            }
+        },
+        stepOn: {
+            ref: stepOn,
+            background: '#45aaf2',
+            border: '1px solid #bbbbbb',
+            transition: 'background-color 500ms ease-out',
+        },
+        stepActive: {
+            border: '1px solid #eb3b5a',
+            background: '#a5b1c2',
+            [`&.${stepOn}`]: {
+                background: '#fed330',
+                transition: 'background-color 10ms !important',
+            }
+        },
+        title: {
+            textTransform: 'capitalize',
+        }
+    });
+});
 
 interface SelectablePattern {
     value: string;
@@ -122,12 +150,10 @@ const DrumMachine: React.FC = () => {
                                             value={selectedPattern}
                                             data={selectablePatterns}
                                     />
-                                    <Button disabled={playing} className="drum-machine__StartStopButton"
-                                            onClick={startClock}>
+                                    <Button disabled={playing} onClick={startClock}>
                                         Start
                                     </Button>
-                                    <Button disabled={!playing} className="drum-machine__StartStopButton"
-                                            onClick={stopClock}>
+                                    <Button disabled={!playing} onClick={stopClock}>
                                         Stop
                                     </Button>
                                 </Container>
@@ -153,13 +179,13 @@ interface TrackComponentProps {
 const TrackComponent: React.FC<TrackComponentProps> = ({track, currentStep}) => {
     const {classes} = useStyles();
     return (
-            <Card padding="xs" shadow="sm" withBorder className="track-component">
-                <Title order={3} className="title">
+            <Card padding="xs" shadow="sm" withBorder>
+                <Title order={3} className={classes.title}>
                     {track.instrument}
                 </Title>
                 <div className={classes.trackSteps}>
                     {track.steps.map((trackStep, i) => (
-                            <StepComponent currentStep={currentStep} enabled={trackStep === 0 ? false : true}
+                            <StepComponent currentStep={currentStep} enabled={trackStep !== 0}
                                            stepIndex={i} key={i}/>
                     ))}
                 </div>
@@ -177,8 +203,8 @@ const StepComponent: React.FC<StepComponentProps> = ({enabled, currentStep, step
     const {classes} = useStyles();
 
     return <div
-            className={`${classes.step} drum-machine__Step--${currentStep === stepIndex ? 'Active' : 'Inactive'} drum-machine__Step--${
-                    enabled ? 'On' : 'Off'
+            className={`${classes.step} ${currentStep === stepIndex ? classes.stepActive: 'Inactive'} ${
+                    enabled ? classes.stepOn : 'Off'
             }`}
     />;
 };
