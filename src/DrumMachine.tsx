@@ -135,7 +135,7 @@ const DrumMachine: React.FC = () => {
     };
 
     if (error) {
-        return <div className="drum-machine__Error">{error}</div>;
+        return <div>{error}</div>;
     }
 
     const tracks = pattern?.tracks.map((track: Track, trackIndex: number) => (
