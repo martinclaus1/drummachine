@@ -2,8 +2,9 @@ import * as React from 'react';
 import AudioEngine, {browserSupportsWebAudio, Position} from './AudioEngine';
 import {Pattern, patterns, Track} from './Patterns';
 import {useStateIfMounted} from './UseStateIfMounted';
-import {Button, Card, Container, createStyles, LoadingOverlay, Select, SimpleGrid, Title} from '@mantine/core';
+import {Card, Container, createStyles, LoadingOverlay, SimpleGrid, Title} from '@mantine/core';
 import {useAsyncEffect} from './Async';
+import {TopPanel} from './TopPanel';
 
 const useStyles = createStyles((theme, _params, getRef) => {
     const stepOn = getRef('stepOn');
@@ -64,7 +65,7 @@ const useStyles = createStyles((theme, _params, getRef) => {
     });
 });
 
-interface SelectablePattern {
+export interface SelectablePattern {
     value: string;
     label: string;
 }
@@ -137,33 +138,25 @@ const DrumMachine: React.FC = () => {
         return <div className="drum-machine__Error">{error}</div>;
     }
 
+    const tracks = pattern?.tracks.map((track: Track, trackIndex: number) => (
+            <TrackComponent track={track}
+                            currentStep={position?.step}
+                            key={trackIndex}/>));
     return (
             <Container>
                 <Card shadow="sm" padding="sm" className={classes.drumMachine}>
                     <LoadingOverlay visible={loading}/>
                     {!loading && (
                             <>
-                                <Container className={classes.topPanel}>
-                                    <Select
-                                            label="Pattern"
-                                            onChange={(value: string) => setSelectedPattern(value)}
-                                            placeholder="Pick one"
-                                            value={selectedPattern}
-                                            data={selectablePatterns}
-                                    />
-                                    <Button disabled={playing} onClick={startClock}>
-                                        Start
-                                    </Button>
-                                    <Button disabled={!playing} onClick={stopClock}>
-                                        Stop
-                                    </Button>
-                                </Container>
-
+                                <TopPanel
+                                        playing={playing}
+                                        startClock={startClock}
+                                        stopClock={stopClock}
+                                        onChange={setSelectedPattern}
+                                        pattern={selectedPattern}
+                                        patterns={selectablePatterns}/>
                                 <SimpleGrid spacing="xs">
-                                    {pattern?.tracks.map((track: Track, trackIndex: number) => (
-                                            <TrackComponent track={track} currentStep={position?.step}
-                                                            key={trackIndex}/>
-                                    ))}
+                                    {tracks}
                                 </SimpleGrid>
                             </>
                     )}
@@ -179,16 +172,19 @@ interface TrackComponentProps {
 
 const TrackComponent: React.FC<TrackComponentProps> = ({track, currentStep}) => {
     const {classes} = useStyles();
+    const steps = track.steps.map((trackStep, index) => (
+            <StepComponent currentStep={currentStep}
+                           enabled={trackStep !== 0}
+                           stepIndex={index}
+                           key={index}/>));
+
     return (
             <Card padding="xs" shadow="sm" withBorder>
                 <Title order={3} className={classes.title}>
                     {track.instrument}
                 </Title>
                 <div className={classes.trackSteps}>
-                    {track.steps.map((trackStep, i) => (
-                            <StepComponent currentStep={currentStep} enabled={trackStep !== 0}
-                                           stepIndex={i} key={i}/>
-                    ))}
+                    {steps}
                 </div>
             </Card>
     );
