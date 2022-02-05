@@ -19,7 +19,8 @@ const useStyles = createStyles((theme, _params, getRef) => {
             '& > *': {
                 marginRight: theme.spacing.sm,
             },
-            padding: '.5rem 0',
+            padding: 0,
+            marginBottom: theme.spacing.md,
             display: 'flex',
             alignItems: 'flex-end',
         },
@@ -142,7 +143,7 @@ const DrumMachine: React.FC = () => {
                     <LoadingOverlay visible={loading}/>
                     {!loading && (
                             <>
-                                <Container className={classes.topPanel} padding={0}>
+                                <Container className={classes.topPanel}>
                                     <Select
                                             label="Pattern"
                                             onChange={(value: string) => setSelectedPattern(value)}
@@ -203,7 +204,7 @@ const StepComponent: React.FC<StepComponentProps> = ({enabled, currentStep, step
     const {classes} = useStyles();
 
     return <div
-            className={`${classes.step} ${currentStep === stepIndex ? classes.stepActive: 'Inactive'} ${
+            className={`${classes.step} ${currentStep === stepIndex ? classes.stepActive : 'Inactive'} ${
                     enabled ? classes.stepOn : 'Off'
             }`}
     />;
