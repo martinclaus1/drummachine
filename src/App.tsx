@@ -1,7 +1,6 @@
 import {AppShell, Header, MantineProvider, Text, ThemeIcon} from '@mantine/core';
 import {PlayIcon} from '@modulz/radix-icons';
-import React from 'react';
-import './App.scss';
+import * as React from 'react';
 import DrumMachine from './DrumMachine';
 
 const App: React.FC = () => (
@@ -12,7 +11,7 @@ const App: React.FC = () => (
                             <ThemeIcon radius="lg">
                                 <PlayIcon/>
                             </ThemeIcon>
-                            <Text style={{marginLeft: '1rem'}} weight="bold">
+                            <Text ml="xs" weight="bold">
                                 Drum Machine
                             </Text>
                         </Header>
