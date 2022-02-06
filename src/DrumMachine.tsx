@@ -29,34 +29,29 @@ const useStyles = createStyles((theme, _params, getRef) => {
         trackSteps: {
             width: '100%',
             maxWidth: '100%',
-            display: 'flex',
+            display: 'grid',
+            gridAutoFlow: 'column',
+            gridColumnGap: '1%'
         },
         step: {
+            aspectRatio: '1',
             label: 'step',
-            margin: '1px',
             border: '1px solid #aaa',
-            height: '20px',
-            borderRadius: '10px',
-            flex: '1 0',
-            background: '#778ca3',
+            borderRadius: '50%',
+            background: theme.colors.gray[4],
             transition: 'border-color 950ms ease-out, background-color 400ms ease-out',
-
-            '@media (min-width: 600px)': {
-                height: '50px',
-                margin: '2px',
-            }
         },
         stepOn: {
             label: 'stepOn',
             ref: stepOn,
-            background: '#45aaf2',
+            background: theme.colors.blue[4],
             border: '1px solid #bbbbbb',
             transition: 'background-color 500ms ease-out',
         },
         stepActive: {
             label: 'stepActive',
             border: '1px solid #eb3b5a',
-            background: '#a5b1c2',
+            background: theme.colors.gray[6],
             [`&.${stepOn}`]: {
                 background: '#fed330',
                 transition: 'background-color 10ms !important',
@@ -148,7 +143,7 @@ const DrumMachine: React.FC = () => {
                             trackChangeHandler={(stepIndex) => handleTrackChange(trackIndex, stepIndex)}
                             key={trackIndex}/>));
     return (
-            <Container>
+            <Container padding={0}>
                 <Card shadow="sm" padding="sm" className={classes.drumMachine}>
                     <LoadingOverlay visible={loading}/>
                     {!loading && (
