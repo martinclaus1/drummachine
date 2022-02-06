@@ -32,6 +32,7 @@ const useStyles = createStyles((theme, _params, getRef) => {
             display: 'flex',
         },
         step: {
+            label: 'step',
             margin: '1px',
             border: '1px solid #aaa',
             height: '20px',
@@ -46,12 +47,14 @@ const useStyles = createStyles((theme, _params, getRef) => {
             }
         },
         stepOn: {
+            label: 'stepOn',
             ref: stepOn,
             background: '#45aaf2',
             border: '1px solid #bbbbbb',
             transition: 'background-color 500ms ease-out',
         },
         stepActive: {
+            label: 'stepActive',
             border: '1px solid #eb3b5a',
             background: '#a5b1c2',
             [`&.${stepOn}`]: {
@@ -59,6 +62,7 @@ const useStyles = createStyles((theme, _params, getRef) => {
                 transition: 'background-color 10ms !important',
             }
         },
+
         title: {
             textTransform: 'capitalize',
         }
@@ -96,12 +100,18 @@ const DrumMachine: React.FC = () => {
         setLoading(false);
     }, []);
 
+    React.useEffect(() => {
+        if (audioEngine) {
+            handlePatternSelection(patterns[0].name);
+        }
+    }, [audioEngine]);
+
     const handlePatternSelection = (value: string) => {
         const pattern = patterns.find((pattern) => pattern.name === value)!;
         if (playing) {
             stopClock();
         }
-        setPattern(pattern);
+        setPattern(JSON.parse(JSON.stringify(pattern)) as Pattern);
         audioEngine?.setPattern(pattern);
     };
 
@@ -123,9 +133,19 @@ const DrumMachine: React.FC = () => {
         return <div>{error}</div>;
     }
 
+    const handleTrackChange = (trackIndex: number, stepIndex: number) => {
+        if (pattern) {
+            const newPattern = {...pattern};
+            newPattern.tracks[trackIndex].steps[stepIndex] = newPattern.tracks[trackIndex].steps[stepIndex] === 0 ? 1 : 0;
+            audioEngine?.setPattern(pattern);
+            setPattern(newPattern);
+        }
+    };
+
     const tracks = pattern?.tracks.map((track: Track, trackIndex: number) => (
             <TrackComponent track={track}
                             currentStep={position?.step}
+                            trackChangeHandler={(stepIndex) => handleTrackChange(trackIndex, stepIndex)}
                             key={trackIndex}/>));
     return (
             <Container>
@@ -138,6 +158,7 @@ const DrumMachine: React.FC = () => {
                                         startClickHandler={startClock}
                                         stopClickHandler={stopClock}
                                         patternChangeHandler={handlePatternSelection}
+                                        initialPattern={pattern?.name}
                                         patterns={patterns}/>
                                 <SimpleGrid spacing="xs">
                                     {tracks}
@@ -152,14 +173,16 @@ const DrumMachine: React.FC = () => {
 interface TrackComponentProps {
     track: Track;
     currentStep?: number;
+    trackChangeHandler: (stepIndex: number) => void;
 }
 
-const TrackComponent: React.FC<TrackComponentProps> = ({track, currentStep}) => {
+const TrackComponent: React.FC<TrackComponentProps> = ({track, currentStep, trackChangeHandler}) => {
     const {classes} = useStyles();
     const steps = track.steps.map((trackStep, index) => (
             <StepComponent currentStep={currentStep}
                            enabled={trackStep !== 0}
                            stepIndex={index}
+                           stepChangeHandler={() => trackChangeHandler(index)}
                            key={index}/>));
 
     return (
@@ -178,16 +201,17 @@ interface StepComponentProps {
     enabled: boolean;
     currentStep?: number;
     stepIndex: number;
+    stepChangeHandler: () => void,
 }
 
-const StepComponent: React.FC<StepComponentProps> = ({enabled, currentStep, stepIndex}) => {
+const StepComponent: React.FC<StepComponentProps> = ({enabled, currentStep, stepIndex, stepChangeHandler}) => {
     const {classes} = useStyles();
 
-    return <div
-            className={`${classes.step} ${currentStep === stepIndex ? classes.stepActive : 'Inactive'} ${
-                    enabled ? classes.stepOn : 'Off'
-            }`}
-    />;
+    const className = `${classes.step} ${currentStep === stepIndex ? classes.stepActive : 'Inactive'} ${
+            enabled ? classes.stepOn : 'Off'
+    }`;
+
+    return <div className={className} onClick={stepChangeHandler}/>;
 };
 
 export default DrumMachine;
