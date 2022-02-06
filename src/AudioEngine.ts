@@ -68,7 +68,8 @@ export default class AudioEngine {
         this.pattern = pattern;
     }
 
-    startClock = (beatsPerMinute: number) => {
+    startClock = () => {
+        const beatsPerMinute = this.pattern?.beatsPerMinute ?? 0
         this.stepsPerSecond = (beatsPerMinute / 60) * 4;
         this.context = new WebAudioCtor();
 

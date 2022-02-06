@@ -29,36 +29,35 @@ const useStyles = createStyles((theme, _params, getRef) => {
         trackSteps: {
             width: '100%',
             maxWidth: '100%',
-            display: 'flex',
+            display: 'grid',
+            gridAutoFlow: 'column',
+            gridColumnGap: '1%'
         },
         step: {
-            margin: '1px',
+            aspectRatio: '1',
+            label: 'step',
             border: '1px solid #aaa',
-            height: '20px',
-            borderRadius: '10px',
-            flex: '1 0',
-            background: '#778ca3',
+            borderRadius: '50%',
+            background: theme.colors.gray[4],
             transition: 'border-color 950ms ease-out, background-color 400ms ease-out',
-
-            '@media (min-width: 600px)': {
-                height: '50px',
-                margin: '2px',
-            }
         },
         stepOn: {
+            label: 'stepOn',
             ref: stepOn,
-            background: '#45aaf2',
+            background: theme.colors.blue[4],
             border: '1px solid #bbbbbb',
             transition: 'background-color 500ms ease-out',
         },
         stepActive: {
+            label: 'stepActive',
             border: '1px solid #eb3b5a',
-            background: '#a5b1c2',
+            background: theme.colors.gray[6],
             [`&.${stepOn}`]: {
                 background: '#fed330',
                 transition: 'background-color 10ms !important',
             }
         },
+
         title: {
             textTransform: 'capitalize',
         }
@@ -73,13 +72,11 @@ export interface SelectablePattern {
 const DrumMachine: React.FC = () => {
     const {classes} = useStyles();
     const [loading, setLoading] = useStateIfMounted<boolean>(true);
-    const [playing, setPlaying] = useStateIfMounted<boolean>(true);
+    const [playing, setPlaying] = useStateIfMounted<boolean>(false);
     const [position, setPosition] = useStateIfMounted<Position>();
     const [error, setError] = useStateIfMounted<any>();
     const [audioEngine, setAudioEngine] = useStateIfMounted<AudioEngine>();
     const [pattern, setPattern] = useStateIfMounted<Pattern>();
-    const [selectedPattern, setSelectedPattern] = useStateIfMounted<string>('');
-    const [selectablePatterns, setSelectablePatterns] = useStateIfMounted<SelectablePattern[]>([]);
 
     useAsyncEffect(async () => {
         if (!browserSupportsWebAudio()) {
@@ -93,35 +90,28 @@ const DrumMachine: React.FC = () => {
             await audioEngine?.prepare();
         } catch (error) {
             setError(true);
-            setLoading(false);
         }
 
-        const selectablePatterns = patterns.map((pattern) => ({label: pattern.name, value: pattern.name}));
-        setSelectablePatterns(selectablePatterns);
+        setLoading(false);
     }, []);
 
     React.useEffect(() => {
-        if (audioEngine && selectablePatterns.length > 0) {
-            const randomIndex = Math.floor(Math.random() * selectablePatterns.length);
-            setSelectedPattern(selectablePatterns[randomIndex].value);
+        if (audioEngine) {
+            handlePatternSelection(patterns[0].name);
         }
-        setLoading(false);
-    }, [audioEngine, selectablePatterns]);
+    }, [audioEngine]);
 
-    React.useEffect(() => {
-        if (selectedPattern) {
-            const pattern = patterns.find((pattern) => pattern.name === selectedPattern)!;
-            if (playing) {
-                stopClock();
-            }
-            setPattern(pattern);
-            audioEngine?.setPattern(pattern);
+    const handlePatternSelection = (value: string) => {
+        const pattern = patterns.find((pattern) => pattern.name === value)!;
+        if (playing) {
+            stopClock();
         }
-    }, [selectedPattern]);
+        setPattern(JSON.parse(JSON.stringify(pattern)) as Pattern);
+        audioEngine?.setPattern(pattern);
+    };
 
     const startClock = () => {
-        audioEngine?.startClock(pattern?.beatsPerMinute ?? 0);
-
+        audioEngine?.startClock();
         setPlaying(true);
     };
 
@@ -138,23 +128,33 @@ const DrumMachine: React.FC = () => {
         return <div>{error}</div>;
     }
 
+    const handleTrackChange = (trackIndex: number, stepIndex: number) => {
+        if (pattern) {
+            const newPattern = {...pattern};
+            newPattern.tracks[trackIndex].steps[stepIndex] = newPattern.tracks[trackIndex].steps[stepIndex] === 0 ? 1 : 0;
+            audioEngine?.setPattern(pattern);
+            setPattern(newPattern);
+        }
+    };
+
     const tracks = pattern?.tracks.map((track: Track, trackIndex: number) => (
             <TrackComponent track={track}
                             currentStep={position?.step}
+                            trackChangeHandler={(stepIndex) => handleTrackChange(trackIndex, stepIndex)}
                             key={trackIndex}/>));
     return (
-            <Container>
+            <Container padding={0}>
                 <Card shadow="sm" padding="sm" className={classes.drumMachine}>
                     <LoadingOverlay visible={loading}/>
                     {!loading && (
                             <>
                                 <TopPanel
                                         playing={playing}
-                                        startClock={startClock}
-                                        stopClock={stopClock}
-                                        onChange={setSelectedPattern}
-                                        pattern={selectedPattern}
-                                        patterns={selectablePatterns}/>
+                                        startClickHandler={startClock}
+                                        stopClickHandler={stopClock}
+                                        patternChangeHandler={handlePatternSelection}
+                                        initialPattern={pattern?.name}
+                                        patterns={patterns}/>
                                 <SimpleGrid spacing="xs">
                                     {tracks}
                                 </SimpleGrid>
@@ -168,14 +168,16 @@ const DrumMachine: React.FC = () => {
 interface TrackComponentProps {
     track: Track;
     currentStep?: number;
+    trackChangeHandler: (stepIndex: number) => void;
 }
 
-const TrackComponent: React.FC<TrackComponentProps> = ({track, currentStep}) => {
+const TrackComponent: React.FC<TrackComponentProps> = ({track, currentStep, trackChangeHandler}) => {
     const {classes} = useStyles();
     const steps = track.steps.map((trackStep, index) => (
             <StepComponent currentStep={currentStep}
                            enabled={trackStep !== 0}
                            stepIndex={index}
+                           stepChangeHandler={() => trackChangeHandler(index)}
                            key={index}/>));
 
     return (
@@ -194,16 +196,17 @@ interface StepComponentProps {
     enabled: boolean;
     currentStep?: number;
     stepIndex: number;
+    stepChangeHandler: () => void,
 }
 
-const StepComponent: React.FC<StepComponentProps> = ({enabled, currentStep, stepIndex}) => {
+const StepComponent: React.FC<StepComponentProps> = ({enabled, currentStep, stepIndex, stepChangeHandler}) => {
     const {classes} = useStyles();
 
-    return <div
-            className={`${classes.step} ${currentStep === stepIndex ? classes.stepActive : 'Inactive'} ${
-                    enabled ? classes.stepOn : 'Off'
-            }`}
-    />;
+    const className = `${classes.step} ${currentStep === stepIndex ? classes.stepActive : 'Inactive'} ${
+            enabled ? classes.stepOn : 'Off'
+    }`;
+
+    return <div className={className} onClick={stepChangeHandler}/>;
 };
 
 export default DrumMachine;

@@ -39,6 +39,41 @@ export const patterns: Array<Pattern> = [
         ],
     },
     {
+        name: 'triplet template',
+        stepCount: 12,
+        beatsPerMinute: 70,
+        tracks: [
+            {
+                instrument: 'hihat',
+                steps: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            },
+            {
+                instrument: 'ride',
+                steps: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            },
+            {
+                instrument: 'snare',
+                steps: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            },
+            {
+                instrument: 'rim',
+                steps: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            },
+            {
+                instrument: 'clap',
+                steps: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            },
+            {
+                instrument: 'cowbell',
+                steps: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            },
+            {
+                instrument: 'kick',
+                steps: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            },
+        ],
+    },
+    {
         name: 'shuffle',
         stepCount: 12,
         beatsPerMinute: 80,
