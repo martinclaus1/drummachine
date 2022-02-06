@@ -73,13 +73,11 @@ export interface SelectablePattern {
 const DrumMachine: React.FC = () => {
     const {classes} = useStyles();
     const [loading, setLoading] = useStateIfMounted<boolean>(true);
-    const [playing, setPlaying] = useStateIfMounted<boolean>(true);
+    const [playing, setPlaying] = useStateIfMounted<boolean>(false);
     const [position, setPosition] = useStateIfMounted<Position>();
     const [error, setError] = useStateIfMounted<any>();
     const [audioEngine, setAudioEngine] = useStateIfMounted<AudioEngine>();
     const [pattern, setPattern] = useStateIfMounted<Pattern>();
-    const [selectedPattern, setSelectedPattern] = useStateIfMounted<string>('');
-    const [selectablePatterns, setSelectablePatterns] = useStateIfMounted<SelectablePattern[]>([]);
 
     useAsyncEffect(async () => {
         if (!browserSupportsWebAudio()) {
@@ -93,35 +91,22 @@ const DrumMachine: React.FC = () => {
             await audioEngine?.prepare();
         } catch (error) {
             setError(true);
-            setLoading(false);
         }
 
-        const selectablePatterns = patterns.map((pattern) => ({label: pattern.name, value: pattern.name}));
-        setSelectablePatterns(selectablePatterns);
+        setLoading(false);
     }, []);
 
-    React.useEffect(() => {
-        if (audioEngine && selectablePatterns.length > 0) {
-            const randomIndex = Math.floor(Math.random() * selectablePatterns.length);
-            setSelectedPattern(selectablePatterns[randomIndex].value);
+    const handlePatternSelection = (value: string) => {
+        const pattern = patterns.find((pattern) => pattern.name === value)!;
+        if (playing) {
+            stopClock();
         }
-        setLoading(false);
-    }, [audioEngine, selectablePatterns]);
-
-    React.useEffect(() => {
-        if (selectedPattern) {
-            const pattern = patterns.find((pattern) => pattern.name === selectedPattern)!;
-            if (playing) {
-                stopClock();
-            }
-            setPattern(pattern);
-            audioEngine?.setPattern(pattern);
-        }
-    }, [selectedPattern]);
+        setPattern(pattern);
+        audioEngine?.setPattern(pattern);
+    };
 
     const startClock = () => {
-        audioEngine?.startClock(pattern?.beatsPerMinute ?? 0);
-
+        audioEngine?.startClock();
         setPlaying(true);
     };
 
@@ -150,11 +135,10 @@ const DrumMachine: React.FC = () => {
                             <>
                                 <TopPanel
                                         playing={playing}
-                                        startClock={startClock}
-                                        stopClock={stopClock}
-                                        onChange={setSelectedPattern}
-                                        pattern={selectedPattern}
-                                        patterns={selectablePatterns}/>
+                                        startClickHandler={startClock}
+                                        stopClickHandler={stopClock}
+                                        patternChangeHandler={handlePatternSelection}
+                                        patterns={patterns}/>
                                 <SimpleGrid spacing="xs">
                                     {tracks}
                                 </SimpleGrid>
