@@ -103,18 +103,22 @@ const DrumMachine: React.FC = () => {
 
     React.useEffect(() => {
         if (audioEngine) {
-            handlePatternSelection(patterns[0].name);
+            handlePatternSelection(patterns[0]);
         }
     }, [audioEngine]);
 
-    const handlePatternSelection = (value: string) => {
-        const pattern = patterns.find((pattern) => pattern.name === value)!;
+    const handlePatternSelection = (pattern: Pattern) => {
         if (playing) {
             stopClock();
         }
-        setPattern(JSON.parse(JSON.stringify(pattern)) as Pattern);
-        audioEngine?.setPattern(pattern);
+        const clonedPattern = JSON.parse(JSON.stringify(pattern)) as Pattern;
+        setPattern(clonedPattern);
+        audioEngine?.setPattern(clonedPattern);
     };
+
+    const handleBeatsPerMinuteChange = (beatsPerMinute: number) => {
+        audioEngine?.setBeatsPerMinute(beatsPerMinute)
+    }
 
     const startClock = () => {
         audioEngine?.startClock();
@@ -152,13 +156,14 @@ const DrumMachine: React.FC = () => {
             <Container padding={0}>
                 <Card shadow="sm" padding="sm" className={classes.drumMachine}>
                     <LoadingOverlay visible={loading}/>
-                    {!loading && (
+                    {!loading && pattern && (
                             <>
                                 <TopPanel
                                         playing={playing}
                                         startClickHandler={startClock}
                                         stopClickHandler={stopClock}
                                         patternChangeHandler={handlePatternSelection}
+                                        beatsPerMinuteChangeHandler={handleBeatsPerMinuteChange}
                                         pattern={pattern}
                                         patterns={patterns}/>
                                 <SimpleGrid spacing="xs">
