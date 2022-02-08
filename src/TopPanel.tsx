@@ -22,7 +22,7 @@ interface TopPanelProps {
     playing: boolean,
     startClickHandler: () => void,
     stopClickHandler: () => void,
-    initialPattern?: string,
+    pattern?: Pattern,
     patterns: Pattern[],
     patternChangeHandler: (arg0: string) => void
 }
@@ -31,12 +31,11 @@ export const TopPanel: React.FC<TopPanelProps> = ({
                                                       playing,
                                                       startClickHandler,
                                                       stopClickHandler,
-                                                      initialPattern,
+                                                      pattern,
                                                       patternChangeHandler,
                                                       patterns
                                                   }) => {
     const {classes} = useStyles();
-    const [pattern, setPattern] = useStateIfMounted<string>(initialPattern);
     const [selectablePatterns, setSelectablePatterns] = useStateIfMounted<SelectablePattern[]>([]);
 
     React.useEffect(() => {
@@ -44,18 +43,13 @@ export const TopPanel: React.FC<TopPanelProps> = ({
         setSelectablePatterns(selectablePatterns);
     }, [patterns]);
 
-    const handlePatternChange = (value: string) => {
-        setPattern(value);
-        patternChangeHandler(value);
-    };
-
     return (
             <Container className={classes.topPanel}>
                 <Select
                         label="Pattern"
-                        onChange={handlePatternChange}
+                        onChange={patternChangeHandler}
                         placeholder="Pick one"
-                        value={pattern}
+                        value={pattern?.name}
                         data={selectablePatterns}
                 />
                 <Button disabled={playing} onClick={startClickHandler}>

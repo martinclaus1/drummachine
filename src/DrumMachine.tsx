@@ -31,7 +31,7 @@ const useStyles = createStyles((theme, _params, getRef) => {
             maxWidth: '100%',
             display: 'grid',
             gridAutoFlow: 'column',
-            gridColumnGap: '1%'
+            gridColumnGap: '1%',
         },
         step: {
             aspectRatio: '1',
@@ -159,7 +159,7 @@ const DrumMachine: React.FC = () => {
                                         startClickHandler={startClock}
                                         stopClickHandler={stopClock}
                                         patternChangeHandler={handlePatternSelection}
-                                        initialPattern={pattern?.name}
+                                        pattern={pattern}
                                         patterns={patterns}/>
                                 <SimpleGrid spacing="xs">
                                     {tracks}
