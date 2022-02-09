@@ -7,41 +7,30 @@ import {useAsyncEffect} from './Async';
 import {TopPanel} from './TopPanel';
 import TrackComponent from './TrackComponent';
 
-const useStyles = createStyles((theme, _params, getRef) => {
-    const stepOn = getRef('stepOn');
-
+const useStyles = createStyles(() => {
     return ({
         drumMachine: {
             position: 'relative',
             '@media (min-width: 600px)': {
                 minHeight: '600px',
             }
-        },
-        topPanel: {
-            '& > *': {
-                marginRight: theme.spacing.sm,
-            },
-            padding: 0,
-            marginBottom: theme.spacing.md,
-            display: 'flex',
-            alignItems: 'flex-end',
         }
     });
 });
 
-export interface SelectablePattern {
-    value: string;
-    label: string;
-}
-
 const DrumMachine: React.FC = () => {
     const {classes} = useStyles();
     const [loading, setLoading] = useStateIfMounted<boolean>(true);
-    const [playing, setPlaying] = useStateIfMounted<boolean>(false);
-    const [position, setPosition] = useStateIfMounted<Position>();
     const [error, setError] = useStateIfMounted<any>();
+
     const [audioEngine, setAudioEngine] = useStateIfMounted<AudioEngine>();
-    const [pattern, setPattern] = useStateIfMounted<Pattern>();
+    const [position, setPosition] = useStateIfMounted<Position>();
+    const [playing, setPlaying] = useStateIfMounted<boolean>(false);
+    const [selectedPattern, setSelectedPattern] = useStateIfMounted<string>();
+    const [beatsPerMinute, setBeatsPerMinute] = useStateIfMounted<number>();
+    const [tracks, setTracks] = useStateIfMounted<Track[]>();
+
+    const selectablePatterns = patterns.map((pattern) => ({label: pattern.name, value: pattern.name}));
 
     useAsyncEffect(async () => {
         if (!browserSupportsWebAudio()) {
@@ -62,22 +51,9 @@ const DrumMachine: React.FC = () => {
 
     React.useEffect(() => {
         if (audioEngine) {
-            handlePatternSelection(patterns[0]);
+            handlePatternSelection(patterns[0].name);
         }
     }, [audioEngine]);
-
-    const handlePatternSelection = (pattern: Pattern) => {
-        if (playing) {
-            stopClock();
-        }
-        const clonedPattern = JSON.parse(JSON.stringify(pattern)) as Pattern;
-        setPattern(clonedPattern);
-        audioEngine?.setPattern(clonedPattern);
-    };
-
-    const handleBeatsPerMinuteChange = (beatsPerMinute: number) => {
-        audioEngine?.setBeatsPerMinute(beatsPerMinute)
-    }
 
     const startClock = () => {
         audioEngine?.startClock();
@@ -97,41 +73,66 @@ const DrumMachine: React.FC = () => {
         return <div>{error}</div>;
     }
 
-    const handleTrackChange = (trackIndex: number, stepIndex: number) => {
-        if (pattern) {
-            const newPattern = {...pattern};
-            newPattern.tracks[trackIndex].steps[stepIndex] = newPattern.tracks[trackIndex].steps[stepIndex] === 0 ? 1 : 0;
-            audioEngine?.setPattern(pattern);
-            setPattern(newPattern);
+    const handlePatternSelection = (value: string) => {
+        const pattern = patterns.find((pattern) => pattern.name === value)!;
+        const clonedPattern = JSON.parse(JSON.stringify(pattern)) as Pattern;
+
+        if (playing) {
+            stopClock();
+        }
+
+        setBeatsPerMinute(clonedPattern.beatsPerMinute);
+        setSelectedPattern(value);
+        setTracks(clonedPattern.tracks);
+        audioEngine?.initialize(pattern)
+    };
+
+    const handleBeatsPerMinuteChange = (beatsPerMinute: number) => {
+        setBeatsPerMinute(beatsPerMinute);
+        if (audioEngine) {
+            audioEngine.beatsPerMinute = beatsPerMinute;
         }
     };
 
-    const tracks = pattern?.tracks.map((track: Track, trackIndex: number) => (
-            <TrackComponent track={track}
-                            currentStep={position?.step}
-                            trackChangeHandler={(stepIndex) => handleTrackChange(trackIndex, stepIndex)}
-                            key={trackIndex}/>));
+    const handleTrackChange = (trackIndex: number, newSteps: number[]) => {
+        if (tracks) {
+            const newTracks = [...tracks];
+            newTracks[trackIndex].steps = newSteps;
+            setTracks(newTracks);
+
+            if (audioEngine) {
+                audioEngine.tracks = newTracks
+            }
+        }
+    };
+
+    const mappedTracks = tracks?.map((track: Track, trackIndex: number) => (
+        <TrackComponent track={track}
+                        currentStep={position?.step}
+                        trackChangeHandler={(stepIndex) => handleTrackChange(trackIndex, stepIndex)}
+                        key={trackIndex}/>));
     return (
-            <Container padding={0}>
-                <Card shadow="sm" padding="sm" className={classes.drumMachine}>
-                    <LoadingOverlay visible={loading}/>
-                    {!loading && pattern && (
-                            <>
-                                <TopPanel
-                                        playing={playing}
-                                        startClickHandler={startClock}
-                                        stopClickHandler={stopClock}
-                                        patternChangeHandler={handlePatternSelection}
-                                        beatsPerMinuteChangeHandler={handleBeatsPerMinuteChange}
-                                        pattern={pattern}
-                                        patterns={patterns}/>
-                                <SimpleGrid spacing="xs">
-                                    {tracks}
-                                </SimpleGrid>
-                            </>
-                    )}
-                </Card>
-            </Container>
+        <Container padding={0}>
+            <Card shadow="sm" padding="sm" className={classes.drumMachine}>
+                <LoadingOverlay visible={loading}/>
+                {!loading && (
+                    <>
+                        <TopPanel
+                            playing={playing}
+                            selectedPattern={selectedPattern}
+                            selectablePatterns={selectablePatterns}
+                            beatsPerMinute={beatsPerMinute}
+                            startClickHandler={startClock}
+                            stopClickHandler={stopClock}
+                            patternChangeHandler={handlePatternSelection}
+                            beatsPerMinuteChangeHandler={handleBeatsPerMinuteChange}/>
+                        <SimpleGrid spacing="xs">
+                            {mappedTracks}
+                        </SimpleGrid>
+                    </>
+                )}
+            </Card>
+        </Container>
     );
 };
 

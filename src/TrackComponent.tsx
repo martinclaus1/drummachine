@@ -7,16 +7,17 @@ const useStyles = createStyles((theme, _params, getRef) => {
     const stepOn = getRef('stepOn');
 
     return ({
-        trackSteps: {
+        steps: {
+            label: 'steps',
             width: '100%',
-            maxWidth: '100%',
             display: 'grid',
             gridAutoFlow: 'column',
             gridColumnGap: '1%',
+            marginTop: theme.spacing.sm,
         },
         step: {
-            aspectRatio: '1',
             label: 'step',
+            aspectRatio: '1',
             borderWidth: '1px',
             borderStyle: 'solid',
             borderColor: theme.colors.gray[5],
@@ -54,24 +55,31 @@ const useStyles = createStyles((theme, _params, getRef) => {
 interface TrackComponentProps {
     track: Track;
     currentStep?: number;
-    trackChangeHandler: (stepIndex: number) => void;
+    trackChangeHandler: (steps: number[]) => void;
 }
 
 const TrackComponent: React.FC<TrackComponentProps> = ({track, currentStep, trackChangeHandler}) => {
     const {classes} = useStyles();
+
+    const handleStepChange = (stepIndex: number) => {
+        const newSteps = [...track.steps];
+        newSteps[stepIndex] = newSteps[stepIndex] === 0 ? 1 : 0;
+        trackChangeHandler(newSteps);
+    };
+
     const steps = track.steps.map((trackStep, index) => (
         <StepComponent currentStep={currentStep}
                        enabled={trackStep !== 0}
                        stepIndex={index}
-                       stepChangeHandler={() => trackChangeHandler(index)}
+                       stepChangeHandler={() => handleStepChange(index)}
                        key={index}/>));
 
     return (
         <Card padding="xs" shadow="sm" withBorder>
-            <Title order={3} className={classes.title}>
+            <Title order={4} className={classes.title}>
                 {track.instrument}
             </Title>
-            <div className={classes.trackSteps}>
+            <div className={classes.steps}>
                 {steps}
             </div>
         </Card>

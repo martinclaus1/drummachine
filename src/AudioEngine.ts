@@ -1,4 +1,4 @@
-import {Pattern} from './Patterns';
+import {Pattern, Track} from './Patterns';
 import SoundPlayer from './SoundPlayer';
 
 export interface Position {
@@ -47,13 +47,23 @@ export const browserSupportsWebAudio = () => !!WebAudioCtor;
 type OnStep = (arg0: Position) => void;
 
 export default class AudioEngine {
+    set beatsPerMinute(value: number) {
+        this._beatsPerMinute = value;
+    }
+
+    set tracks(value: Track[]) {
+        this._tracks = value;
+    }
+
     private position: Position;
     private context: AudioContext;
     private readonly onStep: OnStep;
     private soundPlayer: SoundPlayer;
-    private pattern?: Pattern;
-    private playing?: boolean;
-    private beatsPerMinute = 0
+
+    private playing = false;
+    private _beatsPerMinute = 0;
+    private _tracks: Track[] = [];
+    private stepCount = 0;
 
     constructor(onStep: OnStep) {
         this.onStep = onStep;
@@ -64,16 +74,11 @@ export default class AudioEngine {
 
     prepare = () => this.soundPlayer.prepare(this.context);
 
-    setPattern(pattern: Pattern) {
-        this.pattern = pattern;
-        this.beatsPerMinute = pattern.beatsPerMinute
+    initialize(pattern: Pattern) {
+        this._tracks = pattern.tracks;
+        this._beatsPerMinute = pattern.beatsPerMinute;
+        this.stepCount = pattern.stepCount;
     }
-
-    setBeatsPerMinute(beatsPerMinute: number) {
-        this.beatsPerMinute = beatsPerMinute;
-    }
-
-    private getStepsPerSecond = () => (this.beatsPerMinute / 60) * 4
 
     startClock = () => {
         this.context = new WebAudioCtor();
@@ -93,7 +98,7 @@ export default class AudioEngine {
         this.context.close();
     };
 
-    onTick = () => {
+    private onTick = () => {
         const currentStepAbsolute = this.getStepAbsolute(this.context.currentTime);
         if (currentStepAbsolute !== this.position.absolute) {
             this.setCurrentStepAbsolute(currentStepAbsolute);
@@ -106,33 +111,34 @@ export default class AudioEngine {
         }
     };
 
-    getStepAbsolute(timing: number) {
+    private getStepAbsolute(timing: number) {
         return Math.floor((timing - leaderTime) * this.getStepsPerSecond());
     }
 
-    setCurrentStepAbsolute(absoluteStepCount: number) {
+    private setCurrentStepAbsolute(absoluteStepCount: number) {
         this.onStep(this.getPosition(absoluteStepCount));
 
         // schedule the sounds one beat ahead so the timing is exact
         this.scheduleSounds(this.getPosition(absoluteStepCount + 1));
     }
 
-    getPosition(absoluteStepCount: number) {
-        const stepCount = this.pattern?.stepCount ?? 0;
-        return {
-            measure: Math.floor(absoluteStepCount / stepCount),
-            step: absoluteStepCount % stepCount,
-            timing: absoluteStepCount / this.getStepsPerSecond() + leaderTime,
-            absolute: absoluteStepCount,
-        };
-    }
-
-    scheduleSounds = (position: Position) => {
+    private scheduleSounds = (position: Position) => {
         if (!this.playing) return;
-        this.pattern?.tracks.forEach((track) => {
+        this._tracks?.forEach((track) => {
             if (track.steps[position.step]) {
                 this.soundPlayer.play(this.context, track.instrument, position.timing ?? 0);
             }
         });
     };
+
+    private getPosition(absoluteStepCount: number) {
+        return {
+            measure: Math.floor(absoluteStepCount / this.stepCount),
+            step: absoluteStepCount % this.stepCount,
+            timing: absoluteStepCount / this.getStepsPerSecond() + leaderTime,
+            absolute: absoluteStepCount,
+        };
+    }
+
+    private getStepsPerSecond = () => (this._beatsPerMinute / 60) * 4;
 }
