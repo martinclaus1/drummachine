@@ -1,7 +1,7 @@
 {
   "name": "drummachine",
   "version": "0.1.0",
-  "homepage": "https://martinclaus1.github.io/drummachine",
+  "homepage": "https://drummachine.martinclaus.dev",
   "private": true,
   "dependencies": {
     "@mantine/core": "^3.6.3",
