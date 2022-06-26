@@ -11,7 +11,7 @@ yarn start
 
 ## Live demo
 
-The live demo can be used [here](https://martinclaus1.github.io/drummachine).
+The live demo can be used [here](https://drummachine.martinclaus.dev/).
 ## Future outlook
 
 * allow pattern changes in the UI
