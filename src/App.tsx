@@ -4,22 +4,22 @@ import * as React from 'react';
 import DrumMachine from './DrumMachine';
 
 const App: React.FC = () => (
-        <MantineProvider>
-            <AppShell
-                    header={
-                        <Header height="auto" style={{display: 'flex'}} p="xs">
-                            <ThemeIcon radius="lg">
-                                <PlayIcon/>
-                            </ThemeIcon>
-                            <Text ml="xs" weight="bold">
-                                Drum Machine
-                            </Text>
-                        </Header>
-                    }
-            >
-                <DrumMachine/>
-            </AppShell>
-        </MantineProvider>
+    <MantineProvider>
+        <AppShell
+            header={
+                <Header height="auto" style={{display: 'flex'}} p="xs">
+                    <ThemeIcon radius="lg">
+                        <PlayIcon/>
+                    </ThemeIcon>
+                    <Text ml="xs" weight="bold">
+                        Drum Machine
+                    </Text>
+                </Header>
+            }
+        >
+            <DrumMachine/>
+        </AppShell>
+    </MantineProvider>
 );
 
 export default App;

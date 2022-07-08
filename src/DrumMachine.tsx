@@ -84,7 +84,7 @@ const DrumMachine: React.FC = () => {
         setBeatsPerMinute(clonedPattern.beatsPerMinute);
         setSelectedPattern(value);
         setTracks(clonedPattern.tracks);
-        audioEngine?.initialize(pattern)
+        audioEngine?.initialize(pattern);
     };
 
     const handleBeatsPerMinuteChange = (beatsPerMinute: number) => {
@@ -101,7 +101,7 @@ const DrumMachine: React.FC = () => {
             setTracks(newTracks);
 
             if (audioEngine) {
-                audioEngine.tracks = newTracks
+                audioEngine.tracks = newTracks;
             }
         }
     };

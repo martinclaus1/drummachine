@@ -1,4 +1,4 @@
-import rawPatterns from "./rawPatterns.json"
+import rawPatterns from './rawPatterns.json';
 
 export type Instrument = 'snare' | 'clap' | 'cowbell' | 'kick' | 'hihat' | 'ride' | 'rim';
 
@@ -14,4 +14,4 @@ export interface Pattern {
     tracks: Track[];
 }
 
-export const patterns = rawPatterns.items as Array<Pattern>
+export const patterns = rawPatterns.items as Array<Pattern>;

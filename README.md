@@ -1,6 +1,9 @@
-#  🎼 Drum machine
+# 🎼 Drum machine
 
-Drum machine is a fork from [noops-challenge/drumbot](https://github.com/noops-challenge/drumbot). The idea is to create a drum computer which is available in the browser. It should help students learn new rhythms and improve their timing. It uses the [WebAudio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API). The frontend is written in [React](https://reactjs.org/) and uses the [Mantine component library](https://mantine.dev/).
+Drum machine is a fork from [noops-challenge/drumbot](https://github.com/noops-challenge/drumbot). The idea is to create
+a drum computer which is available in the browser. It should help students learn new rhythms and improve their timing.
+It uses the [WebAudio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API). The frontend is written
+in [React](https://reactjs.org/) and uses the [Mantine component library](https://mantine.dev/).
 
 ## How to use it
 
@@ -12,12 +15,14 @@ yarn start
 ## Live demo
 
 The live demo can be used [here](https://drummachine.martinclaus.dev/).
+
 ## Future outlook
 
 * allow pattern changes in the UI
 * allow custom sample sounds
 * make the BPM configurable
-* dynamic sounds for each track ([AudioContext.createGain](https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/createGain))
+* dynamic sounds for each
+  track ([AudioContext.createGain](https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/createGain))
 * move the sounds between left and right or provide better experience with 3D sound
     * [AudioContext.createStereoPanner()](https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/createStereoPanner)
     * [PannerNode](https://developer.mozilla.org/en-US/docs/Web/API/PannerNode)
@@ -25,8 +30,8 @@ The live demo can be used [here](https://drummachine.martinclaus.dev/).
 * improve the design continuously
 * provide a pattern API
 * add visualizations
-    * sound meter ([AudioContext.createAnalyser](https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/createAnalyser))
-
+    * sound
+      meter ([AudioContext.createAnalyser](https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/createAnalyser))
 
 ## Further reading
 
