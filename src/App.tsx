@@ -7,7 +7,7 @@ const App: React.FC = () => (
         <MantineProvider>
             <AppShell
                     header={
-                        <Header height="auto" style={{display: 'flex'}} padding="xs">
+                        <Header height="auto" style={{display: 'flex'}} p="xs">
                             <ThemeIcon radius="lg">
                                 <PlayIcon/>
                             </ThemeIcon>

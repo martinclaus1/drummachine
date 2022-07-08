@@ -75,7 +75,7 @@ const TrackComponent: React.FC<TrackComponentProps> = ({track, currentStep, trac
                        key={index}/>));
 
     return (
-        <Card padding="xs" shadow="sm" withBorder>
+        <Card p="xs" shadow="sm" withBorder>
             <Title order={4} className={classes.title}>
                 {track.instrument}
             </Title>

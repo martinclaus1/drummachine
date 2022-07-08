@@ -112,8 +112,8 @@ const DrumMachine: React.FC = () => {
                         trackChangeHandler={(stepIndex) => handleTrackChange(trackIndex, stepIndex)}
                         key={trackIndex}/>));
     return (
-        <Container padding={0}>
-            <Card shadow="sm" padding="sm" className={classes.drumMachine}>
+        <Container p={0}>
+            <Card shadow="sm" p="sm" className={classes.drumMachine}>
                 <LoadingOverlay visible={loading}/>
                 {!loading && (
                     <>
