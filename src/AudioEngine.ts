@@ -140,5 +140,25 @@ export default class AudioEngine {
         };
     }
 
+    /**
+     * - supported time signatures: 2/4, 3/4, 4/4 (quarter notes will be used for counting)
+     * - not supported: 3/8, 6/8, 9/8, 12/8 (because the counting mechanism can be different)
+     * <br>
+     * example calculation:
+     *  - time signature: 4/4
+     *  - measure/bar duration: 2 sec
+     *  - beat duration: 0.5 sec
+     *  - BPM: 120
+     * <br>
+     * notes duration:
+     *  - whole note: 2 sec
+     *  - half note: 1 sec
+     *  - quarter note: 0.5 sec
+     *  - eighth note: 0.25 sec
+     *  - sixteenth note: 0.125 sec
+     *  - thirty-second note: 0.0625 sec (currently not supported)
+     * <br>
+     * @see https://www.omnicalculator.com/other/bpm
+     */
     private getStepsPerSecond = () => (this._beatsPerMinute / 60) * 4;
 }
