@@ -38,3 +38,4 @@ The live demo can be used [here](https://drummachine.martinclaus.dev/).
 * https://github.com/cwilso/metronome/blob/master/js/metronome.js
 * https://www.html5rocks.com/en/tutorials/audio/scheduling/
 * https://toolstud.io/music/bpm.php?bpm=120&bpm_unit=4%2F4
+* https://web.dev/audio-scheduling/
