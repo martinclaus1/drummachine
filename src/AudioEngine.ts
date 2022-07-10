@@ -3,7 +3,6 @@ import SoundPlayer from './SoundPlayer';
 
 export interface Position {
     absolute: number;
-    measure: number;
     step: number;
     time?: number;
     timing?: number;
@@ -11,7 +10,6 @@ export interface Position {
 
 const defaultPosition: Position = {
     absolute: -1,
-    measure: -1,
     step: -1,
     time: -1,
 };
@@ -133,7 +131,6 @@ export default class AudioEngine {
 
     private getPosition(absoluteStepCount: number) {
         return {
-            measure: Math.floor(absoluteStepCount / this.stepCount),
             step: absoluteStepCount % this.stepCount,
             timing: absoluteStepCount / this.getStepsPerSecond() + leaderTime,
             absolute: absoluteStepCount,
@@ -160,5 +157,9 @@ export default class AudioEngine {
      * <br>
      * @see https://www.omnicalculator.com/other/bpm
      */
-    private getStepsPerSecond = () => (this._beatsPerMinute / 60) * 4;
+    private getStepsPerSecond = () => {
+        const beatsPerSecond = this._beatsPerMinute / 60;
+        const noteSchema = this.stepCount / 4;
+        return beatsPerSecond * noteSchema;
+    };
 }
