@@ -68,11 +68,10 @@ const TrackComponent: React.FC<TrackComponentProps> = ({track, currentStep, trac
     };
 
     const steps = track.steps.map((trackStep, index) => (
-        <StepComponent currentStep={currentStep}
+        <StepComponent active={currentStep === index}
                        enabled={trackStep !== 0}
-                       stepIndex={index}
                        stepChangeHandler={() => handleStepChange(index)}
-                       key={index}/>));
+                       key={`${trackStep}_${index}`}/>));
 
     return (
         <Card p="xs" shadow="sm" withBorder>
@@ -88,19 +87,19 @@ const TrackComponent: React.FC<TrackComponentProps> = ({track, currentStep, trac
 
 interface StepComponentProps {
     enabled: boolean;
+    active: boolean;
     currentStep?: number;
-    stepIndex: number;
     stepChangeHandler: () => void,
 }
 
-const StepComponent: React.FC<StepComponentProps> = ({enabled, currentStep, stepIndex, stepChangeHandler}) => {
+const StepComponent: React.FC<StepComponentProps> = React.memo(({enabled, active, stepChangeHandler}) => {
     const {classes} = useStyles();
 
-    const className = `${classes.step} ${currentStep === stepIndex ? classes.stepActive : 'Inactive'} ${
+    const className = `${classes.step} ${active ? classes.stepActive : 'Inactive'} ${
         enabled ? classes.stepOn : 'Off'
     }`;
 
     return <div className={className} onClick={stepChangeHandler}/>;
-};
+}, (prevProps, nextProps) => prevProps.enabled === nextProps.enabled && prevProps.active === nextProps.active);
 
 export default TrackComponent;
