@@ -1,11 +1,12 @@
 import * as React from 'react';
-import AudioEngine, {browserSupportsWebAudio, Position} from './AudioEngine';
+import {useRef} from 'react';
+import AudioEngine, {browserSupportsWebAudio, Position} from './audioEngine/AudioEngine';
 import {Pattern, patterns, Track} from './Patterns';
-import {useStateIfMounted} from './UseStateIfMounted';
+import {useStateIfMounted} from './helpers/UseStateIfMounted';
 import {Card, Container, createStyles, LoadingOverlay, SimpleGrid} from '@mantine/core';
-import {useAsyncEffect} from './Async';
+import {useAsyncEffect} from './helpers/Async';
 import {TopPanel} from './TopPanel';
-import TrackComponent from './TrackComponent';
+import TrackComponent, {trackStyles} from './TrackComponent';
 
 const useStyles = createStyles(() => {
     return ({
@@ -19,12 +20,13 @@ const useStyles = createStyles(() => {
 });
 
 const DrumMachine: React.FC = () => {
+    const stepActive = trackStyles().classes.stepActive;
     const {classes} = useStyles();
+    const stepRefs = useRef<Array<Array<HTMLDivElement | null>>>([]);
     const [loading, setLoading] = useStateIfMounted<boolean>(true);
     const [error, setError] = useStateIfMounted<any>();
 
     const [audioEngine, setAudioEngine] = useStateIfMounted<AudioEngine>();
-    const [position, setPosition] = useStateIfMounted<Position>();
     const [playing, setPlaying] = useStateIfMounted<boolean>(false);
     const [selectedPattern, setSelectedPattern] = useStateIfMounted<string>();
     const [beatsPerMinute, setBeatsPerMinute] = useStateIfMounted<number>();
@@ -63,10 +65,17 @@ const DrumMachine: React.FC = () => {
     const stopClock = () => {
         audioEngine?.stopClock();
         setPlaying(false);
+
+        stepRefs.current.forEach((tracks) => {
+            tracks.forEach(step => step?.classList.remove(stepActive));
+        });
     };
 
     const onStep = (position: Position) => {
-        setPosition(position);
+        stepRefs.current.forEach((tracks) => {
+            tracks.at(position.step - 1)?.classList.remove(stepActive);
+            tracks[position.step]?.classList.add(stepActive);
+        });
     };
 
     if (error) {
@@ -106,11 +115,15 @@ const DrumMachine: React.FC = () => {
         }
     };
 
-    const mappedTracks = tracks?.map((track: Track, trackIndex: number) => (
-        <TrackComponent track={track}
-                        currentStep={position?.step}
-                        trackChangeHandler={(stepIndex) => handleTrackChange(trackIndex, stepIndex)}
-                        key={trackIndex}/>));
+    const mappedTracks = tracks?.map((track: Track, trackIndex: number) => {
+        stepRefs.current[trackIndex] = [];
+        return (
+            <TrackComponent track={track}
+                            trackRefs={stepRefs.current[trackIndex]}
+                            trackChangeHandler={(stepIndex) => handleTrackChange(trackIndex, stepIndex)}
+                            key={trackIndex}/>);
+    });
+
     return (
         <Container p={0}>
             <Card shadow="sm" p="sm" className={classes.drumMachine}>

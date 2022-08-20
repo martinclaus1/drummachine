@@ -1,4 +1,4 @@
-import {Pattern, Track} from './Patterns';
+import {Pattern, Track} from '../Patterns';
 import SoundPlayer from './SoundPlayer';
 
 export interface Position {
@@ -97,15 +97,15 @@ export default class AudioEngine {
     };
 
     private onTick = () => {
-        const currentStepAbsolute = this.getStepAbsolute(this.context.currentTime);
-        if (currentStepAbsolute !== this.position.absolute) {
-            this.setCurrentStepAbsolute(currentStepAbsolute);
-        }
         if (this.playing) {
+            const currentStepAbsolute = this.getStepAbsolute(this.context.currentTime);
+            if (currentStepAbsolute !== this.position.absolute) {
+                this.setCurrentStepAbsolute(currentStepAbsolute);
+            }
+
             requestAnimationFrame(this.onTick);
         } else {
             this.position = defaultPosition;
-            this.onStep(this.position);
         }
     };
 
