@@ -4,7 +4,8 @@ import * as React from 'react';
 import DrumMachine from './DrumMachine';
 
 const App: React.FC = () => {
-    const header = <Header height={50} style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}} p="xs">
+    const header = <Header height={50} style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}
+                           p="xs">
         <div style={{display: 'flex', alignItems: 'center'}}>
             <ThemeIcon radius="lg">
                 <PlayIcon/>
@@ -14,9 +15,9 @@ const App: React.FC = () => {
             </Text>
         </div>
         <div>
-            <Anchor href={"https://github.com/martinclaus1/drummachine"} target="_blank">
+            <Anchor href={'https://github.com/martinclaus1/drummachine'} target="_blank">
                 <ThemeIcon radius="sm" variant="outline">
-                    <GitHubLogoIcon />
+                    <GitHubLogoIcon/>
                 </ThemeIcon>
             </Anchor>
         </div>

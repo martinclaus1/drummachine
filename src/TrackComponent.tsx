@@ -2,8 +2,7 @@ import {Track} from './Patterns';
 import * as React from 'react';
 import {Card, createStyles, Title} from '@mantine/core';
 
-
-const useStyles = createStyles((theme, _params, getRef) => {
+export const trackStyles = createStyles((theme, _params, getRef) => {
     const stepOn = getRef('stepOn');
 
     return ({
@@ -54,12 +53,12 @@ const useStyles = createStyles((theme, _params, getRef) => {
 
 interface TrackComponentProps {
     track: Track;
-    currentStep?: number;
+    trackRefs: Array<HTMLDivElement | null>;
     trackChangeHandler: (steps: number[]) => void;
 }
 
-const TrackComponent: React.FC<TrackComponentProps> = ({track, currentStep, trackChangeHandler}) => {
-    const {classes} = useStyles();
+const TrackComponent: React.FC<TrackComponentProps> = ({track, trackChangeHandler, trackRefs}) => {
+    const {classes} = trackStyles();
 
     const handleStepChange = (stepIndex: number) => {
         const newSteps = [...track.steps];
@@ -68,8 +67,8 @@ const TrackComponent: React.FC<TrackComponentProps> = ({track, currentStep, trac
     };
 
     const steps = track.steps.map((trackStep, index) => (
-        <StepComponent active={currentStep === index}
-                       enabled={trackStep !== 0}
+        <StepComponent enabled={trackStep !== 0}
+                       onSetStepRef={(element) => trackRefs[index] = element}
                        stepChangeHandler={() => handleStepChange(index)}
                        key={`${trackStep}_${index}`}/>));
 
@@ -87,19 +86,19 @@ const TrackComponent: React.FC<TrackComponentProps> = ({track, currentStep, trac
 
 interface StepComponentProps {
     enabled: boolean;
-    active: boolean;
     currentStep?: number;
     stepChangeHandler: () => void,
+    onSetStepRef: (element: HTMLDivElement | null) => void
 }
 
-const StepComponent: React.FC<StepComponentProps> = React.memo(({enabled, active, stepChangeHandler}) => {
-    const {classes} = useStyles();
+const StepComponent: React.FC<StepComponentProps> = ({enabled, stepChangeHandler, onSetStepRef}) => {
+    const {classes} = trackStyles();
 
-    const className = `${classes.step} ${active ? classes.stepActive : 'Inactive'} ${
+    const className = `${classes.step} ${
         enabled ? classes.stepOn : 'Off'
     }`;
 
-    return <div className={className} onClick={stepChangeHandler}/>;
-}, (prevProps, nextProps) => prevProps.enabled === nextProps.enabled && prevProps.active === nextProps.active);
+    return <div className={className} onClick={stepChangeHandler} ref={el => onSetStepRef(el)}/>;
+};
 
 export default TrackComponent;
