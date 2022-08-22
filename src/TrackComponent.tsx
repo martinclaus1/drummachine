@@ -72,16 +72,14 @@ const TrackComponent: React.FC<TrackComponentProps> = ({track, trackChangeHandle
                        stepChangeHandler={() => handleStepChange(index)}
                        key={`${trackStep}_${index}`}/>));
 
-    return (
-        <Card p="xs" shadow="sm" withBorder>
-            <Title order={4} className={classes.title}>
-                {track.instrument}
-            </Title>
-            <div className={classes.steps}>
-                {steps}
-            </div>
-        </Card>
-    );
+    return <Card p="xs" shadow="sm" withBorder>
+        <Title order={4} className={classes.title}>
+            {track.instrument}
+        </Title>
+        <div className={classes.steps}>
+            {steps}
+        </div>
+    </Card>;
 };
 
 interface StepComponentProps {
