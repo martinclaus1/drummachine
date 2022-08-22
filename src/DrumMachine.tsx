@@ -78,22 +78,20 @@ const DrumMachine: React.FC = () => {
         });
     };
 
-    if (error) {
-        return <div>{error}</div>;
-    }
-
     const handlePatternSelection = (value: string) => {
-        const pattern = patterns.find((pattern) => pattern.name === value)!;
-        const clonedPattern = JSON.parse(JSON.stringify(pattern)) as Pattern;
+        const pattern = patterns.find((pattern) => pattern.name === value);
+        if (pattern) {
+            const clonedPattern = JSON.parse(JSON.stringify(pattern)) as Pattern;
 
-        if (playing) {
-            stopClock();
+            if (playing) {
+                stopClock();
+            }
+
+            setBeatsPerMinute(clonedPattern.beatsPerMinute);
+            setSelectedPattern(value);
+            setTracks(clonedPattern.tracks);
+            audioEngine?.initialize(pattern);
         }
-
-        setBeatsPerMinute(clonedPattern.beatsPerMinute);
-        setSelectedPattern(value);
-        setTracks(clonedPattern.tracks);
-        audioEngine?.initialize(pattern);
     };
 
     const handleBeatsPerMinuteChange = (beatsPerMinute: number) => {
@@ -117,36 +115,35 @@ const DrumMachine: React.FC = () => {
 
     const mappedTracks = tracks?.map((track: Track, trackIndex: number) => {
         stepRefs.current[trackIndex] = [];
-        return (
-            <TrackComponent track={track}
-                            trackRefs={stepRefs.current[trackIndex]}
-                            trackChangeHandler={(stepIndex) => handleTrackChange(trackIndex, stepIndex)}
-                            key={trackIndex}/>);
+        return <TrackComponent track={track}
+                               trackRefs={stepRefs.current[trackIndex]}
+                               trackChangeHandler={(stepIndex) => handleTrackChange(trackIndex, stepIndex)}
+                               key={trackIndex}/>;
     });
 
-    return (
-        <Container p={0}>
-            <Card shadow="sm" p="sm" className={classes.drumMachine}>
-                <LoadingOverlay visible={loading}/>
-                {!loading && (
-                    <>
-                        <TopPanel
-                            playing={playing}
-                            selectedPattern={selectedPattern}
-                            selectablePatterns={selectablePatterns}
-                            beatsPerMinute={beatsPerMinute}
-                            startClickHandler={startClock}
-                            stopClickHandler={stopClock}
-                            patternChangeHandler={handlePatternSelection}
-                            beatsPerMinuteChangeHandler={handleBeatsPerMinuteChange}/>
-                        <SimpleGrid spacing="xs">
-                            {mappedTracks}
-                        </SimpleGrid>
-                    </>
-                )}
-            </Card>
-        </Container>
-    );
+    if (error) {
+        return <div>{error}</div>;
+    }
+
+    return <Container p={0}>
+        <Card shadow="sm" p="sm" className={classes.drumMachine}>
+            <LoadingOverlay visible={loading}/>
+            {!loading && <>
+                <TopPanel
+                    playing={playing}
+                    selectedPattern={selectedPattern}
+                    selectablePatterns={selectablePatterns}
+                    beatsPerMinute={beatsPerMinute}
+                    startClickHandler={startClock}
+                    stopClickHandler={stopClock}
+                    patternChangeHandler={handlePatternSelection}
+                    beatsPerMinuteChangeHandler={handleBeatsPerMinuteChange}/>
+                <SimpleGrid spacing="xs">
+                    {mappedTracks}
+                </SimpleGrid>
+            </>}
+        </Card>
+    </Container>;
 };
 
 export default DrumMachine;
