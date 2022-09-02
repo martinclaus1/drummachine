@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {Button, Container, createStyles, NumberInput, Select} from '@mantine/core';
 import {LapTimerIcon} from '@modulz/radix-icons';
+import {patterns} from './Patterns';
 
 const useStyles = createStyles((theme) => {
     return ({
@@ -24,7 +25,6 @@ export interface SelectablePattern {
 interface TopPanelProps {
     playing: boolean,
     selectedPattern?: string,
-    selectablePatterns: SelectablePattern[],
     beatsPerMinute?: number,
     startClickHandler: () => void,
     stopClickHandler: () => void,
@@ -32,20 +32,20 @@ interface TopPanelProps {
     beatsPerMinuteChangeHandler: (arg0: number) => void,
 }
 
-export const TopPanel: React.FC<TopPanelProps> = ({
-                                                      playing,
-                                                      selectedPattern,
-                                                      selectablePatterns,
-                                                      beatsPerMinute,
-                                                      startClickHandler,
-                                                      stopClickHandler,
-                                                      patternChangeHandler,
-                                                      beatsPerMinuteChangeHandler
-                                                  }) => {
-    const {classes} = useStyles();
+export const TopPanel: React.FC<TopPanelProps> =
+    ({
+         playing,
+         selectedPattern,
+         beatsPerMinute,
+         startClickHandler,
+         stopClickHandler,
+         patternChangeHandler,
+         beatsPerMinuteChangeHandler
+     }) => {
+        const {classes} = useStyles();
+        const selectablePatterns = patterns.map((pattern) => ({label: pattern.name, value: pattern.name}));
 
-    return (
-        <Container className={classes.topPanel}>
+        return <Container className={classes.topPanel}>
             <Select label="Pattern" onChange={patternChangeHandler} placeholder="Pick one" value={selectedPattern}
                     data={selectablePatterns}/>
             <Button disabled={playing} onClick={startClickHandler}>
@@ -56,5 +56,5 @@ export const TopPanel: React.FC<TopPanelProps> = ({
             </Button>
             <NumberInput icon={<LapTimerIcon/>} min={0} max={200} label="BPM" value={beatsPerMinute}
                          onChange={beatsPerMinuteChangeHandler} stepHoldDelay={500} stepHoldInterval={100}/>
-        </Container>);
-};
+        </Container>;
+    };

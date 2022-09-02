@@ -5,7 +5,7 @@ import {useStateIfMounted} from './helpers/UseStateIfMounted';
 import {Card, Container, createStyles, LoadingOverlay} from '@mantine/core';
 import {useAsyncEffect} from './helpers/Async';
 import {TopPanel} from './TopPanel';
-import {TracksComponent} from './TrackComponent';
+import {TracksComponent} from './TracksComponent';
 
 const useStyles = createStyles(() => {
     return ({
@@ -29,8 +29,6 @@ const DrumMachine: React.FC = () => {
     const [stepCount, setStepCount] = useStateIfMounted<number>(0);
     const [beatsPerMinute, setBeatsPerMinute] = useStateIfMounted<number>();
     const [tracks, setTracks] = useStateIfMounted<Track[]>();
-
-    const selectablePatterns = patterns.map((pattern) => ({label: pattern.name, value: pattern.name}));
 
     useAsyncEffect(async () => {
         if (!browserSupportsWebAudio()) {
@@ -112,7 +110,6 @@ const DrumMachine: React.FC = () => {
                 <TopPanel
                     playing={playing}
                     selectedPattern={selectedPattern}
-                    selectablePatterns={selectablePatterns}
                     beatsPerMinute={beatsPerMinute}
                     startClickHandler={startClock}
                     stopClickHandler={stopClock}
