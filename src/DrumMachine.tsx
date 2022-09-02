@@ -1,12 +1,11 @@
 import * as React from 'react';
-import {useRef} from 'react';
-import AudioEngine, {browserSupportsWebAudio, Position} from './audioEngine/AudioEngine';
+import AudioEngine, {browserSupportsWebAudio} from './audioEngine/AudioEngine';
 import {Pattern, patterns, Track} from './Patterns';
 import {useStateIfMounted} from './helpers/UseStateIfMounted';
-import {Card, Container, createStyles, LoadingOverlay, SimpleGrid} from '@mantine/core';
+import {Card, Container, createStyles, LoadingOverlay} from '@mantine/core';
 import {useAsyncEffect} from './helpers/Async';
 import {TopPanel} from './TopPanel';
-import TrackComponent, {stepStyles} from './TrackComponent';
+import {TracksComponent} from './TrackComponent';
 
 const useStyles = createStyles(() => {
     return ({
@@ -20,15 +19,14 @@ const useStyles = createStyles(() => {
 });
 
 const DrumMachine: React.FC = () => {
-    const stepActive = stepStyles().classes.stepActive;
     const {classes} = useStyles();
-    const stepRefs = useRef<Array<Array<HTMLDivElement | null>>>([]);
     const [loading, setLoading] = useStateIfMounted<boolean>(true);
     const [error, setError] = useStateIfMounted<any>();
 
     const [audioEngine, setAudioEngine] = useStateIfMounted<AudioEngine>();
     const [playing, setPlaying] = useStateIfMounted<boolean>(false);
     const [selectedPattern, setSelectedPattern] = useStateIfMounted<string>();
+    const [stepCount, setStepCount] = useStateIfMounted<number>(0);
     const [beatsPerMinute, setBeatsPerMinute] = useStateIfMounted<number>();
     const [tracks, setTracks] = useStateIfMounted<Track[]>();
 
@@ -40,7 +38,7 @@ const DrumMachine: React.FC = () => {
             setError('This browser does not support WebAudio. Try Edge, Firefox, Chrome or Safari.');
         }
 
-        const audioEngine = new AudioEngine(onStep);
+        const audioEngine = new AudioEngine();
         setAudioEngine(audioEngine);
         try {
             await audioEngine?.prepare();
@@ -65,17 +63,6 @@ const DrumMachine: React.FC = () => {
     const stopClock = () => {
         audioEngine?.stopClock();
         setPlaying(false);
-
-        stepRefs.current.forEach((tracks) => {
-            tracks.forEach(step => step?.classList.remove(stepActive));
-        });
-    };
-
-    const onStep = (position: Position) => {
-        stepRefs.current.forEach((tracks) => {
-            tracks.at(position.step - 1)?.classList.remove(stepActive);
-            tracks[position.step]?.classList.add(stepActive);
-        });
     };
 
     const handlePatternSelection = (value: string) => {
@@ -88,6 +75,7 @@ const DrumMachine: React.FC = () => {
             }
 
             setBeatsPerMinute(clonedPattern.beatsPerMinute);
+            setStepCount(clonedPattern.stepCount);
             setSelectedPattern(value);
             setTracks(clonedPattern.tracks);
             audioEngine?.initialize(pattern);
@@ -113,14 +101,6 @@ const DrumMachine: React.FC = () => {
         }
     };
 
-    const mappedTracks = tracks?.map((track: Track, trackIndex: number) => {
-        stepRefs.current[trackIndex] = [];
-        return <TrackComponent track={track}
-                               trackRefs={stepRefs.current[trackIndex]}
-                               trackChangeHandler={(stepIndex) => handleTrackChange(trackIndex, stepIndex)}
-                               key={trackIndex}/>;
-    });
-
     if (error) {
         return <div>{error}</div>;
     }
@@ -138,9 +118,11 @@ const DrumMachine: React.FC = () => {
                     stopClickHandler={stopClock}
                     patternChangeHandler={handlePatternSelection}
                     beatsPerMinuteChangeHandler={handleBeatsPerMinuteChange}/>
-                <SimpleGrid spacing="xs">
-                    {mappedTracks}
-                </SimpleGrid>
+                <TracksComponent playing={playing}
+                                 tracks={tracks}
+                                 handleTrackChange={handleTrackChange}
+                                 audioEngine={audioEngine}
+                                 stepCount={stepCount}/>
             </>}
         </Card>
     </Container>;

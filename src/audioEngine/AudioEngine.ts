@@ -42,7 +42,7 @@ const leaderTime = 0.25;
 
 export const browserSupportsWebAudio = () => !!WebAudioCtor;
 
-type OnStep = (arg0: Position) => void;
+type OnStep = ((arg0: Position) => void) | undefined;
 
 export default class AudioEngine {
     set beatsPerMinute(value: number) {
@@ -53,9 +53,13 @@ export default class AudioEngine {
         this._tracks = value;
     }
 
+    set onStep(callback: OnStep) {
+        this._onStep = callback;
+    }
+
     private position: Position;
     private context: AudioContext;
-    private readonly onStep: OnStep;
+    private _onStep: OnStep = undefined;
     private soundPlayer: SoundPlayer;
 
     private playing = false;
@@ -63,8 +67,7 @@ export default class AudioEngine {
     private _tracks: Track[] = [];
     private stepCount = 0;
 
-    constructor(onStep: OnStep) {
-        this.onStep = onStep;
+    constructor() {
         this.position = defaultPosition;
         this.context = initializeFirstContext();
         this.soundPlayer = new SoundPlayer();
@@ -114,7 +117,7 @@ export default class AudioEngine {
     }
 
     private setCurrentStepAbsolute(absoluteStepCount: number) {
-        this.onStep(this.getPosition(absoluteStepCount));
+        this._onStep && this._onStep(this.getPosition(absoluteStepCount));
 
         // schedule the sounds one beat ahead so the timing is exact
         this.scheduleSounds(this.getPosition(absoluteStepCount + 1));
