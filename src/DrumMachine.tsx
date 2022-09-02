@@ -6,7 +6,7 @@ import {useStateIfMounted} from './helpers/UseStateIfMounted';
 import {Card, Container, createStyles, LoadingOverlay, SimpleGrid} from '@mantine/core';
 import {useAsyncEffect} from './helpers/Async';
 import {TopPanel} from './TopPanel';
-import TrackComponent, {trackStyles} from './TrackComponent';
+import TrackComponent, {stepStyles} from './TrackComponent';
 
 const useStyles = createStyles(() => {
     return ({
@@ -20,7 +20,7 @@ const useStyles = createStyles(() => {
 });
 
 const DrumMachine: React.FC = () => {
-    const stepActive = trackStyles().classes.stepActive;
+    const stepActive = stepStyles().classes.stepActive;
     const {classes} = useStyles();
     const stepRefs = useRef<Array<Array<HTMLDivElement | null>>>([]);
     const [loading, setLoading] = useStateIfMounted<boolean>(true);

@@ -1,19 +1,39 @@
 import {Track} from './Patterns';
 import * as React from 'react';
-import {Card, createStyles, Title} from '@mantine/core';
+import {createStyles, Text} from '@mantine/core';
 
-export const trackStyles = createStyles((theme, _params, getRef) => {
+interface TrackStyleProps {
+    stepCount: number;
+}
+
+export const trackStyles = createStyles((theme, {stepCount}: TrackStyleProps) => {
+    const stepColumns = `repeat(${stepCount}, minmax(auto, 40px))`;
+    return ({
+        track: {
+            label: 'steps',
+            display: 'grid',
+            gridColumnGap: '1%',
+            marginTop: theme.spacing.sm,
+            gridTemplateColumns: `100px ${stepColumns}`,
+
+            [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
+                gridTemplateColumns: stepColumns,
+            },
+        },
+        title: {
+            label: 'title',
+            [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
+                gridColumn: `1/-1`,
+            },
+            textTransform: "capitalize"
+        },
+    });
+});
+
+export const stepStyles = createStyles((theme, _params, getRef) => {
     const stepOn = getRef('stepOn');
 
     return ({
-        steps: {
-            label: 'steps',
-            width: '100%',
-            display: 'grid',
-            gridAutoFlow: 'column',
-            gridColumnGap: '1%',
-            marginTop: theme.spacing.sm,
-        },
         step: {
             label: 'step',
             aspectRatio: '1',
@@ -44,10 +64,6 @@ export const trackStyles = createStyles((theme, _params, getRef) => {
                 transition: 'background-color 10ms !important',
             }
         },
-
-        title: {
-            textTransform: 'capitalize',
-        }
     });
 });
 
@@ -58,7 +74,7 @@ interface TrackComponentProps {
 }
 
 const TrackComponent: React.FC<TrackComponentProps> = ({track, trackChangeHandler, trackRefs}) => {
-    const {classes} = trackStyles();
+    const {classes} = trackStyles({stepCount: track.steps.length});
 
     const handleStepChange = (stepIndex: number) => {
         const newSteps = [...track.steps];
@@ -72,14 +88,12 @@ const TrackComponent: React.FC<TrackComponentProps> = ({track, trackChangeHandle
                        stepChangeHandler={() => handleStepChange(index)}
                        key={`${trackStep}_${index}`}/>));
 
-    return <Card p="xs" shadow="sm" withBorder>
-        <Title order={4} className={classes.title}>
+    return <div className={classes.track}>
+        <Text className={classes.title}>
             {track.instrument}
-        </Title>
-        <div className={classes.steps}>
-            {steps}
-        </div>
-    </Card>;
+        </Text>
+        {steps}
+    </div>;
 };
 
 interface StepComponentProps {
@@ -90,7 +104,7 @@ interface StepComponentProps {
 }
 
 const StepComponent: React.FC<StepComponentProps> = ({enabled, stepChangeHandler, onSetStepRef}) => {
-    const {classes} = trackStyles();
+    const {classes} = stepStyles();
 
     const className = `${classes.step} ${
         enabled ? classes.stepOn : 'Off'
