@@ -1,35 +1,44 @@
-import {Anchor, AppShell, Header, MantineProvider, Text, ThemeIcon} from '@mantine/core';
-import {GitHubLogoIcon, PlayIcon} from '@modulz/radix-icons';
+import {ActionIcon, Anchor, AppShell, Group, Header, Text, ThemeIcon, useMantineColorScheme} from '@mantine/core';
+import {GitHubLogoIcon, MoonIcon, PlayIcon, SunIcon} from '@modulz/radix-icons';
 import * as React from 'react';
 import DrumMachine from './DrumMachine';
 
 const App: React.FC = () => {
-    const header = <Header height={50} style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}
-                           p="xs">
-        <div style={{display: 'flex', alignItems: 'center'}}>
+    return <AppShell header={<CustomHeader/>}>
+        <DrumMachine/>
+    </AppShell>;
+};
+
+const CustomHeader: React.FC = () => {
+    const {colorScheme, toggleColorScheme} = useMantineColorScheme();
+    const dark = colorScheme === 'dark';
+
+    return <Header height={50} style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}
+                   p="xs">
+        <Group spacing="xs">
             <ThemeIcon radius="lg">
                 <PlayIcon/>
             </ThemeIcon>
-            <Text ml="xs" weight="bold">
+            <Text weight="bold">
                 Drum Machine
             </Text>
-        </div>
-        <div>
+        </Group>
+        <Group spacing="xs">
             <Anchor href={'https://github.com/martinclaus1/drummachine'} target="_blank">
                 <ThemeIcon radius="sm" variant="outline">
                     <GitHubLogoIcon/>
                 </ThemeIcon>
             </Anchor>
-        </div>
+            <ActionIcon
+                variant="outline"
+                color={dark ? 'yellow' : 'blue'}
+                onClick={() => toggleColorScheme()}
+                title="Toggle color scheme"
+            >
+                {dark ? <SunIcon/> : <MoonIcon/>}
+            </ActionIcon>
+        </Group>
     </Header>;
-
-    return (
-        <MantineProvider>
-            <AppShell header={header}>
-                <DrumMachine/>
-            </AppShell>
-        </MantineProvider>
-    );
 };
 
 export default App;

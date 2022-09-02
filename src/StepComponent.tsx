@@ -12,13 +12,13 @@ export const stepStyles = createStyles((theme, _params, getRef) => {
             borderStyle: 'solid',
             borderColor: theme.colors.gray[5],
             borderRadius: '20%',
-            background: theme.colors.gray[4],
+            backgroundColor: theme.colorScheme === 'light' ? theme.colors.gray[4] : theme.colors.gray[6],
             transition: 'border-color 950ms ease-out, background-color 400ms ease-out',
         },
         stepOn: {
             label: 'stepOn',
             ref: stepOn,
-            background: theme.colors.blue[4],
+            backgroundColor: theme.colorScheme === 'light' ? theme.colors.blue[4]: theme.colors.blue[8],
             borderWidth: '1px',
             borderStyle: 'solid',
             borderColor: theme.colors.gray[5],
@@ -29,9 +29,9 @@ export const stepStyles = createStyles((theme, _params, getRef) => {
             borderWidth: '1px',
             borderStyle: 'solid',
             borderColor: theme.colors.red[5],
-            background: theme.colors.gray[6],
+            backgroundColor: theme.colorScheme === 'light' ? theme.colors.gray[6] : theme.colors.gray[8],
             [`&.${stepOn}`]: {
-                background: theme.colors.yellow[4],
+                backgroundColor: theme.colors.yellow[4],
                 transition: 'background-color 10ms !important',
             }
         },
