@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {createStyles} from '@mantine/core';
+import {ForwardedRef} from 'react';
 
 export const stepStyles = createStyles((theme, _params, getRef) => {
     const stepOn = getRef('stepOn');
@@ -29,7 +30,7 @@ export const stepStyles = createStyles((theme, _params, getRef) => {
             borderWidth: '1px',
             borderStyle: 'solid',
             borderColor: theme.colors.red[5],
-            backgroundColor: theme.colorScheme === 'light' ? theme.colors.gray[6] : theme.colors.gray[8],
+            backgroundColor: theme.colorScheme === 'light' ? theme.colors.gray[6] : theme.colors.gray[1],
             [`&.${stepOn}`]: {
                 backgroundColor: theme.colors.yellow[4],
                 transition: 'background-color 10ms !important',
@@ -40,14 +41,12 @@ export const stepStyles = createStyles((theme, _params, getRef) => {
 
 interface StepComponentProps {
     enabled: boolean;
-    currentStep?: number;
     stepChangeHandler: () => void,
-    onSetStepRef: (element: HTMLDivElement | null) => void
 }
 
-export const StepComponent: React.FC<StepComponentProps> = ({enabled, stepChangeHandler, onSetStepRef}) => {
+export const StepComponent = React.forwardRef(({enabled, stepChangeHandler}: StepComponentProps, ref: ForwardedRef<HTMLDivElement>) => {
     const {classes} = stepStyles();
     const className = `${classes.step} ${enabled ? classes.stepOn : ''}`;
 
-    return <div className={className} onClick={stepChangeHandler} ref={el => onSetStepRef(el)}/>;
-};
+    return <div className={className} onClick={stepChangeHandler} ref={ref}/>;
+});

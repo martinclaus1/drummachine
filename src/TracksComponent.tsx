@@ -1,7 +1,7 @@
 import AudioEngine, {Position} from './audioEngine/AudioEngine';
 import {Track} from './Patterns';
 import * as React from 'react';
-import {useRef} from 'react';
+import {RefObject, useRef} from 'react';
 import {createStyles, SimpleGrid} from '@mantine/core';
 import TrackComponent from './TrackComponent';
 import {stepStyles} from './StepComponent';
@@ -13,8 +13,8 @@ interface TrackStyleProps {
 const trackStyles = createStyles((theme, {stepCount}: TrackStyleProps) => {
     const stepColumns = `repeat(${stepCount}, minmax(auto, 40px))`;
     return ({
-        track: {
-            label: 'steps',
+        tracks: {
+            label: 'tracks',
             display: 'grid',
             gridColumnGap: '1%',
             marginTop: theme.spacing.sm,
@@ -50,7 +50,7 @@ export const TracksComponent: React.FC<TracksComponentProps> =
          playing,
          stepCount
      }) => {
-        const stepRefs = useRef<Array<Array<HTMLDivElement | null>>>([]);
+        const trackRefs = useRef<Array<Array<RefObject<HTMLDivElement> | null>>>([]);
         const stepActive = stepStyles().classes.stepActive;
         const {classes} = trackStyles({stepCount});
 
@@ -58,33 +58,33 @@ export const TracksComponent: React.FC<TracksComponentProps> =
             if (audioEngine) {
                 audioEngine.onStep = onStep;
             }
-        }, [audioEngine]);
+        }, [audioEngine, stepActive]);
 
         React.useEffect(() => {
             if (!playing) {
-                stepRefs.current.forEach((tracks) => {
-                    tracks.forEach(step => step?.classList.remove(stepActive));
+                trackRefs.current.forEach((tracks) => {
+                    tracks.forEach(step => step?.current?.classList.remove(stepActive));
                 });
             }
         }, [playing]);
 
         const onStep = (position: Position) => {
-            stepRefs.current.forEach((tracks) => {
-                tracks.at(position.step - 1)?.classList.remove(stepActive);
-                tracks[position.step]?.classList.add(stepActive);
+            trackRefs.current.forEach((tracks) => {
+                tracks.at(position.step - 1)?.current?.classList.remove(stepActive);
+                tracks[position.step]?.current?.classList.add(stepActive);
             });
         };
 
         const mappedTracks = tracks?.map((track: Track, trackIndex: number) => {
-            stepRefs.current[trackIndex] = [];
+            trackRefs.current[trackIndex] = [];
             return <TrackComponent track={track}
-                                   trackRefs={stepRefs.current[trackIndex]}
+                                   stepRefs={trackRefs.current[trackIndex]}
                                    trackChangeHandler={(stepIndex) => handleTrackChange(trackIndex, stepIndex)}
                                    key={trackIndex}
                                    titleClass={classes.title}/>;
         });
 
-        return <SimpleGrid spacing="xs" className={classes.track}>
+        return <SimpleGrid spacing="xs" className={classes.tracks}>
             {mappedTracks}
         </SimpleGrid>;
     };
