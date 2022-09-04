@@ -72,11 +72,11 @@ export const TracksComponent: React.FC<TracksComponentProps> = props => {
 
     const mappedTracks = tracks?.map((track: Track, trackIndex: number) => {
         trackRefs.current[trackIndex] = [];
-        return <TrackComponent track={track}
-                               stepCount={stepCount}
+        return <TrackComponent key={`track_${trackIndex}`}
+                               trackIndex={trackIndex}
+                               track={track}
                                stepRefs={trackRefs.current[trackIndex]}
                                trackChangeHandler={(stepIndex) => handleTrackChange(trackIndex, stepIndex)}
-                               key={trackIndex}
                                titleClass={classes.title}/>;
     });
 

@@ -6,14 +6,15 @@ import {StepComponent} from './StepComponent';
 
 interface TrackComponentProps {
     track: Track;
-    stepCount: number,
+    trackIndex: number,
     stepRefs: Array<RefObject<HTMLDivElement> | null>;
     trackChangeHandler: (steps: number[]) => void;
     titleClass: string,
 }
 
 const TrackComponent: React.FC<TrackComponentProps> = props => {
-    const {track, trackChangeHandler, stepRefs, titleClass, stepCount} = props;
+    const {track, trackChangeHandler, stepRefs, titleClass, trackIndex} = props;
+    const stepCount = track.steps.length
 
     const handleStepChange = (stepIndex: number) => {
         const newSteps = [...track.steps];
@@ -30,14 +31,14 @@ const TrackComponent: React.FC<TrackComponentProps> = props => {
         return naturalIndex % quarterNotesPerBar === 0;
     };
 
-    const steps = track.steps.map((trackStep, index) => {
+    const steps = track.steps.map((step, index) => {
         stepRefs[index] = React.createRef<HTMLDivElement>();
         return (
-            <StepComponent enabled={trackStep !== 0}
+            <StepComponent enabled={step !== 0}
                            endOfQuarterNote={isEndOfQuarterNote(index)}
                            ref={stepRefs[index]}
                            stepChangeHandler={() => handleStepChange(index)}
-                           key={`${trackStep}_${index}`}/>);
+                           key={`step_${trackIndex}_${index}`}/>);
     });
 
     return <>
