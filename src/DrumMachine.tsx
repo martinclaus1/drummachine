@@ -2,7 +2,7 @@ import * as React from 'react';
 import AudioEngine, {browserSupportsWebAudio} from './audioEngine/AudioEngine';
 import {Pattern, patterns, Track} from './Patterns';
 import {useStateIfMounted} from './helpers/UseStateIfMounted';
-import {Card, Container, createStyles, LoadingOverlay} from '@mantine/core';
+import {Card, Container, createStyles, LoadingOverlay, Stack} from '@mantine/core';
 import {useAsyncEffect} from './helpers/Async';
 import {TopPanel} from './TopPanel';
 import {TracksComponent} from './TracksComponent';
@@ -11,9 +11,6 @@ const useStyles = createStyles(() => {
     return ({
         drumMachine: {
             position: 'relative',
-            '@media (min-width: 600px)': {
-                minHeight: '600px',
-            }
         }
     });
 });
@@ -104,9 +101,9 @@ const DrumMachine: React.FC = () => {
     }
 
     return <Container p={0}>
-        <Card shadow="sm" p="sm" className={classes.drumMachine}>
-            <LoadingOverlay visible={loading}/>
-            {!loading && <>
+        <LoadingOverlay visible={loading} />
+        <Stack>
+            <Card shadow="xs" p="sm">
                 <TopPanel
                     playing={playing}
                     selectedPattern={selectedPattern}
@@ -115,13 +112,15 @@ const DrumMachine: React.FC = () => {
                     stopClickHandler={stopClock}
                     patternChangeHandler={handlePatternSelection}
                     beatsPerMinuteChangeHandler={handleBeatsPerMinuteChange}/>
+            </Card>
+            <Card shadow="xs" p="sm" className={classes.drumMachine}>
                 <TracksComponent playing={playing}
                                  tracks={tracks}
                                  handleTrackChange={handleTrackChange}
                                  audioEngine={audioEngine}
                                  stepCount={stepCount}/>
-            </>}
-        </Card>
+            </Card>
+        </Stack>
     </Container>;
 };
 

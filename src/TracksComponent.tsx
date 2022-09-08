@@ -2,7 +2,7 @@ import AudioEngine, {Position} from './audioEngine/AudioEngine';
 import {Track} from './Patterns';
 import * as React from 'react';
 import {RefObject, useRef} from 'react';
-import {createStyles, SimpleGrid} from '@mantine/core';
+import {createStyles} from '@mantine/core';
 import TrackComponent from './TrackComponent';
 import {stepStyles} from './StepComponent';
 
@@ -16,20 +16,12 @@ const trackStyles = createStyles((theme, {stepCount}: TrackStyleProps) => {
         tracks: {
             label: 'tracks',
             display: 'grid',
-            gridColumnGap: theme.spacing.xs,
-            marginTop: theme.spacing.sm,
+            gridGap: theme.spacing.xs,
             gridTemplateColumns: `100px ${stepColumns}`,
 
             [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
                 gridTemplateColumns: stepColumns,
             },
-        },
-        title: {
-            label: 'title',
-            [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
-                gridColumn: `1/-1`,
-            },
-            textTransform: 'capitalize'
         },
     });
 });
@@ -76,11 +68,10 @@ export const TracksComponent: React.FC<TracksComponentProps> = props => {
                                trackIndex={trackIndex}
                                track={track}
                                stepRefs={trackRefs.current[trackIndex]}
-                               trackChangeHandler={(stepIndex) => handleTrackChange(trackIndex, stepIndex)}
-                               titleClass={classes.title}/>;
+                               trackChangeHandler={(stepIndex) => handleTrackChange(trackIndex, stepIndex)}/>;
     });
 
-    return <SimpleGrid spacing="xs" className={classes.tracks}>
+    return <div className={classes.tracks}>
         {mappedTracks}
-    </SimpleGrid>;
+    </div>;
 };

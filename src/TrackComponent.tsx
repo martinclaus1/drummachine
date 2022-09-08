@@ -1,20 +1,33 @@
 import {Track} from './Patterns';
 import * as React from 'react';
 import {RefObject} from 'react';
-import {Text} from '@mantine/core';
+import {createStyles, Text} from '@mantine/core';
 import {StepComponent} from './StepComponent';
+
+const trackStyles = createStyles((theme) => ({
+    title: {
+        display: 'flex',
+        justifyContent: 'start',
+        alignItems: 'center',
+        label: 'title',
+        [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
+            gridColumn: `1/-1`,
+        },
+        textTransform: 'capitalize'
+    },
+}));
 
 interface TrackComponentProps {
     track: Track;
     trackIndex: number,
     stepRefs: Array<RefObject<HTMLDivElement> | null>;
     trackChangeHandler: (steps: number[]) => void;
-    titleClass: string,
 }
 
 const TrackComponent: React.FC<TrackComponentProps> = props => {
-    const {track, trackChangeHandler, stepRefs, titleClass, trackIndex} = props;
-    const stepCount = track.steps.length
+    const {classes} = trackStyles();
+    const {track, trackChangeHandler, stepRefs, trackIndex} = props;
+    const stepCount = track.steps.length;
 
     const handleStepChange = (stepIndex: number) => {
         const newSteps = [...track.steps];
@@ -42,7 +55,7 @@ const TrackComponent: React.FC<TrackComponentProps> = props => {
     });
 
     return <>
-        <Text className={titleClass}>
+        <Text className={classes.title}>
             {track.instrument}
         </Text>
         {steps}
