@@ -103,7 +103,7 @@ const DrumMachine: React.FC = () => {
     return <Container p={0}>
         <LoadingOverlay visible={loading} />
         <Stack>
-            <Card shadow="xs" p="sm">
+            <Card shadow="xs" p="sm" withBorder>
                 <TopPanel
                     playing={playing}
                     selectedPattern={selectedPattern}
@@ -113,7 +113,7 @@ const DrumMachine: React.FC = () => {
                     patternChangeHandler={handlePatternSelection}
                     beatsPerMinuteChangeHandler={handleBeatsPerMinuteChange}/>
             </Card>
-            <Card shadow="xs" p="sm" className={classes.drumMachine}>
+            <Card shadow="xs" p="sm" className={classes.drumMachine} withBorder>
                 <TracksComponent playing={playing}
                                  tracks={tracks}
                                  handleTrackChange={handleTrackChange}
